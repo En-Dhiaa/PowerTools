@@ -61,3 +61,4 @@ body:
       placeholder: "e.g. Windows 11 23H2 x64, PowerTool Extended Edition v0.88.0"
     validations:
       required: true
+
