@@ -193,3 +193,4 @@ class KeyboardLayoutConverterEngine:
             converted = cls.arabic_to_english(text, layout, preserve_punctuation)
 
         return (converted, applied_dir, conf)
+

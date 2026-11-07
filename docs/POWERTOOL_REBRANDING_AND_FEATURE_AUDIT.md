@@ -209,3 +209,4 @@ tests/test_powertool_branding.py::test_issue_templates_complete PASSED   [100%]
    The developer GitHub profile `https://github.com/En-Dhiaa` is live and authenticated. To enable user issue reporting, push the repository to GitHub as `En-Dhiaa/PowerToys` (or `Powertool`) and ensure GitHub Issues is toggled ON under Repository Settings.
 2. **Linux Global Hotkeys on Wayland:**
    Wayland security boundaries restrict arbitrary global keystroke interception without compositor portals (such as `org.freedesktop.portal.GlobalShortcuts`). Under Wayland, configure desktop environment shortcut keys (GNOME / KDE) to trigger `powertool --translator` and `powertool --converter` for seamless operation.
+

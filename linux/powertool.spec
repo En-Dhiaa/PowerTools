@@ -43,3 +43,4 @@ ln -s /usr/share/powertool/powertool-linux.py %{buildroot}/usr/bin/powertool
 %changelog
 * Sat Nov 07 2026 En-Dhiaa <en-dhiaa@users.noreply.github.com> - 0.88.0-1
 - Initial release of Powertool Extended Edition
+

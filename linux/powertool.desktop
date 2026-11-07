@@ -23,3 +23,4 @@ Exec=python3 /usr/share/powertool/powertool-linux.py --converter
 [Desktop Action Developer]
 Name=Developer Profile (En-Dhiaa)
 Exec=python3 /usr/share/powertool/powertool-linux.py --developer
+

@@ -12,3 +12,4 @@ Depends: ${misc:Depends}, ${python3:Depends}, python3-pyside6, python3-ctranslat
 Description: Powertool Extended Edition - Offline Translator and Keyboard Layout Converter
  Enhanced Windows and Linux productivity suite featuring offline Arabic/English
  translation and physical layout text correction, developed by En-Dhiaa.
+
