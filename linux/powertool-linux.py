@@ -28,6 +28,7 @@ MODULES_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "src", "modules"))
 if MODULES_DIR not in sys.path:
     sys.path.insert(0, os.path.join(MODULES_DIR, "OfflineTranslator"))
     sys.path.insert(0, os.path.join(MODULES_DIR, "KeyboardLayoutConverter"))
+    sys.path.insert(0, os.path.join(MODULES_DIR, "LinuxModules"))
 
 
 class PowertoolLinuxApp(QMainWindow):
@@ -145,63 +146,63 @@ class PowertoolLinuxApp(QMainWindow):
                 "name": "Powertool Run",
                 "purpose": "Quick application and file launcher with instant search capabilities.",
                 "shortcut": "Alt + Space",
-                "status": "Enabled",
-                "action": None,
-                "action_label": "Configured",
+                "status": "Enabled (Active)",
+                "action": self.launch_run,
+                "action_label": "Open Run",
                 "platform": "Windows & Linux"
             },
             {
                 "name": "Window Layout Management (FancyZones)",
                 "purpose": "Create window grid layouts for multi-monitor snapping.",
                 "shortcut": "Win + Shift + `",
-                "status": "Enabled",
-                "action": None,
-                "action_label": "Configured",
+                "status": "Enabled (Active)",
+                "action": self.launch_tiling,
+                "action_label": "Open Tiling",
                 "platform": "Windows & Linux"
             },
             {
                 "name": "Keyboard Manager",
                 "purpose": "Rebind keys and create custom global shortcut combinations.",
                 "shortcut": "Configurable",
-                "status": "Enabled",
-                "action": None,
-                "action_label": "Configured",
+                "status": "Enabled (Active)",
+                "action": self.launch_kbm,
+                "action_label": "Open Keyboard Manager",
                 "platform": "Windows & Linux"
             },
             {
                 "name": "Batch File Renamer",
                 "purpose": "Advanced batch renaming using regex patterns and live preview.",
-                "shortcut": "Context Menu",
-                "status": "Enabled",
-                "action": None,
-                "action_label": "Configured",
+                "shortcut": "Ctrl + Alt + R",
+                "status": "Enabled (Active)",
+                "action": self.launch_rename,
+                "action_label": "Open PowerRename",
                 "platform": "Windows & Linux"
             },
             {
                 "name": "Image Resizer",
                 "purpose": "Quickly resize images in batch from file manager.",
-                "shortcut": "Context Menu",
-                "status": "Enabled",
-                "action": None,
-                "action_label": "Configured",
+                "shortcut": "Ctrl + Alt + I",
+                "status": "Enabled (Active)",
+                "action": self.launch_resizer,
+                "action_label": "Open Image Resizer",
                 "platform": "Windows & Linux"
             },
             {
                 "name": "Color Picker",
                 "purpose": "System-wide color picker with HEX, RGB, and CMYK formats.",
                 "shortcut": "Win + Shift + C",
-                "status": "Enabled",
-                "action": None,
-                "action_label": "Configured",
+                "status": "Enabled (Active)",
+                "action": self.launch_color_picker,
+                "action_label": "Open Color Picker",
                 "platform": "Windows & Linux"
             },
             {
                 "name": "Text Extractor",
                 "purpose": "Optical character recognition (OCR) to copy text anywhere on screen.",
                 "shortcut": "Win + Shift + T",
-                "status": "Enabled",
-                "action": None,
-                "action_label": "Configured",
+                "status": "Enabled (Active)",
+                "action": self.launch_text_extractor,
+                "action_label": "Open Text Extractor",
                 "platform": "Windows & Linux"
             }
         ]
@@ -311,6 +312,18 @@ class PowertoolLinuxApp(QMainWindow):
         conv_act = menu.addAction("Keyboard Layout Converter (Ctrl+Alt+Shift+K)")
         conv_act.triggered.connect(self.launch_converter)
 
+        run_act = menu.addAction("Powertool Run (Alt+Space)")
+        run_act.triggered.connect(self.launch_run)
+
+        color_act = menu.addAction("Color Picker (Win+Shift+C)")
+        color_act.triggered.connect(self.launch_color_picker)
+
+        ocr_act = menu.addAction("Text Extractor (Win+Shift+T)")
+        ocr_act.triggered.connect(self.launch_text_extractor)
+
+        tiling_act = menu.addAction("Window Tiling (Win+Shift+`)")
+        tiling_act.triggered.connect(self.launch_tiling)
+
         menu.addSeparator()
         dev_act = menu.addAction("Developer Profile (En-Dhiaa)")
         dev_act.triggered.connect(lambda: self.tabs.setCurrentIndex(1) or self.show())
@@ -336,12 +349,69 @@ class PowertoolLinuxApp(QMainWindow):
         except Exception as e:
             print(f"Error launching converter: {e}")
 
+    def launch_run(self):
+        try:
+            from PowertoolRun import launch_run
+            launch_run()
+        except Exception as e:
+            print(f"Error launching Powertool Run: {e}")
+
+    def launch_tiling(self):
+        try:
+            from WindowTilingLinux import launch_window_tiling
+            launch_window_tiling()
+        except Exception as e:
+            print(f"Error launching Window Tiling: {e}")
+
+    def launch_kbm(self):
+        try:
+            from KeyboardManagerLinux import launch_keyboard_manager
+            launch_keyboard_manager()
+        except Exception as e:
+            print(f"Error launching Keyboard Manager: {e}")
+
+    def launch_rename(self, files=None):
+        try:
+            from PowerRenameLinux import launch_rename
+            launch_rename(files)
+        except Exception as e:
+            print(f"Error launching PowerRename: {e}")
+
+    def launch_resizer(self, files=None):
+        try:
+            from ImageResizerLinux import launch_image_resizer
+            launch_image_resizer(files)
+        except Exception as e:
+            print(f"Error launching Image Resizer: {e}")
+
+    def launch_color_picker(self):
+        try:
+            from ColorPickerLinux import launch_color_picker
+            launch_color_picker()
+        except Exception as e:
+            print(f"Error launching Color Picker: {e}")
+
+    def launch_text_extractor(self):
+        try:
+            from TextExtractorLinux import launch_text_extractor
+            launch_text_extractor()
+        except Exception as e:
+            print(f"Error launching Text Extractor: {e}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Powertool Linux Desktop Application")
     parser.add_argument("--translator", action="store_true", help="Launch Offline Translator directly")
     parser.add_argument("--converter", action="store_true", help="Launch Keyboard Layout Converter directly")
+    parser.add_argument("--run", action="store_true", help="Launch Powertool Run directly")
+    parser.add_argument("--tiling", action="store_true", help="Launch Window Tiling directly")
+    parser.add_argument("--keyboard-manager", action="store_true", help="Launch Keyboard Manager directly")
+    parser.add_argument("--rename", action="store_true", help="Launch Batch File Renamer directly")
+    parser.add_argument("--resizer", "--image-resizer", action="store_true", dest="resizer", help="Launch Image Resizer directly")
+    parser.add_argument("--color-picker", action="store_true", help="Launch Color Picker directly")
+    parser.add_argument("--text-extractor", action="store_true", help="Launch Text Extractor directly")
     parser.add_argument("--developer", action="store_true", help="Open Developer profile")
+    parser.add_argument("files", nargs="*", help="Optional files for Rename or Resizer")
     args = parser.parse_args()
 
     app = QApplication.instance()
@@ -357,6 +427,41 @@ def main():
     if args.converter:
         from KeyboardLayoutConverterUI import launch_converter_popup
         launch_converter_popup()
+        return
+
+    if args.run:
+        from PowertoolRun import launch_run
+        launch_run()
+        return
+
+    if args.tiling:
+        from WindowTilingLinux import launch_window_tiling
+        launch_window_tiling()
+        return
+
+    if args.keyboard_manager:
+        from KeyboardManagerLinux import launch_keyboard_manager
+        launch_keyboard_manager()
+        return
+
+    if args.rename:
+        from PowerRenameLinux import launch_rename
+        launch_rename(args.files)
+        return
+
+    if args.resizer:
+        from ImageResizerLinux import launch_image_resizer
+        launch_image_resizer(args.files)
+        return
+
+    if args.color_picker:
+        from ColorPickerLinux import launch_color_picker
+        launch_color_picker()
+        return
+
+    if args.text_extractor:
+        from TextExtractorLinux import launch_text_extractor
+        launch_text_extractor()
         return
 
     window = PowertoolLinuxApp()

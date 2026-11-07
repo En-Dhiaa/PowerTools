@@ -10,7 +10,7 @@ Categories=Utility;DesktopSettings;Translation;
 Keywords=powertoys;powertool;translator;keyboard;arabic;productivity;
 StartupNotify=true
 StartupWMClass=Powertool
-Actions=Translate;ConvertLayout;Developer;
+Actions=Translate;ConvertLayout;Run;ColorPicker;TextExtractor;Tiling;Developer;
 
 [Desktop Action Translate]
 Name=Offline Translator
@@ -19,6 +19,22 @@ Exec=python3 /usr/share/powertool/powertool-linux.py --translator
 [Desktop Action ConvertLayout]
 Name=Keyboard Layout Converter
 Exec=python3 /usr/share/powertool/powertool-linux.py --converter
+
+[Desktop Action Run]
+Name=Powertool Run
+Exec=python3 /usr/share/powertool/powertool-linux.py --run
+
+[Desktop Action ColorPicker]
+Name=Color Picker
+Exec=python3 /usr/share/powertool/powertool-linux.py --color-picker
+
+[Desktop Action TextExtractor]
+Name=Text Extractor (OCR)
+Exec=python3 /usr/share/powertool/powertool-linux.py --text-extractor
+
+[Desktop Action Tiling]
+Name=Window Tiling (FancyZones)
+Exec=python3 /usr/share/powertool/powertool-linux.py --tiling
 
 [Desktop Action Developer]
 Name=Developer Profile (En-Dhiaa)
