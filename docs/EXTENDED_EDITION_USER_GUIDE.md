@@ -113,3 +113,36 @@ PowerTool Extended Edition features an original, modern Windows 11 icon and visu
   1. تصحيح النصوص المكتوبة باللغة الخطأ عند نسيان تبديل لغة لوحة المفاتيح (مثال: كتابة `لخ اخةث ىخص` تتحول بضغطة زر إلى `go home now`).
   2. يعتمد على المواقع الفيزيائية للمفاتيح وتخطيطات ويندوز (Arabic 101 و Arabic 102).
   3. حماية الحافظة: لا يتم مسح بيانات الحافظة السابقة للمستخدم أثناء العملية.
+
+---
+
+## 6. Developer Profile & Custom Issue Reporting (ملف المطور والإبلاغ عن المشكلات)
+
+### Developer Identity
+* **Lead Developer / Architect:** En-Dhiaa
+* **GitHub Profile:** [https://github.com/En-Dhiaa](https://github.com/En-Dhiaa)
+* **Custom Issue Tracker:** [https://github.com/En-Dhiaa/PowerToys/issues/new/choose](https://github.com/En-Dhiaa/PowerToys/issues/new/choose)
+
+### Developer Page in Settings
+Access **Settings > Developer & About PowerTool** (or click the Developer item in the navigation pane footer):
+* Complete overview of extended enhancements.
+* Clickable links to En-Dhiaa's GitHub profile.
+* Direct button to submit issues and feedback.
+* Clear licensing attributions acknowledging Microsoft Corporation for the upstream PowerToys project (MIT License) and Argos Translate / CTranslate2 model licenses.
+
+### Custom Issue Reporting & Issue Templates
+All user-facing feedback and bug submission actions in PowerTool redirect to En-Dhiaa's repository issue tracker:
+1. **Bug Report (`bug_report.yml`):** Software defects, unexpected crashes, UI glitches.
+2. **Feature Request (`feature_request.yml`):** Proposals for new productivity tools or enhancements.
+3. **Translation Problem (`translation_problem.yml`):** Inaccurate local translations or engine faults.
+4. **Keyboard Layout Conversion Problem (`keyboard_layout_conversion_problem.yml`):** Scancode mapping discrepancies or unmapped characters.
+5. **Offline Translation Model Problem (`offline_translation_model_problem.yml`):** Download failures, SHA-256 verification errors, or model loading issues.
+
+> **Privacy Assurance:** PowerTool issue templates include strict privacy reminders. Never upload personal clipboard contents, passwords, private files, or sensitive business communications.
+
+### Repository Status & Verification Note
+As verified during testing:
+* The developer profile `https://github.com/En-Dhiaa` is active (HTTP 200).
+* The customized repository `https://github.com/En-Dhiaa/PowerToys` will become accessible once published/created on GitHub by En-Dhiaa. To enable issue submissions, create the repository on GitHub and enable GitHub Issues under Repository Settings.
+
+

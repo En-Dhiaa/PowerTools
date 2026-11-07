@@ -211,3 +211,4 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
         }
     }
 }
+

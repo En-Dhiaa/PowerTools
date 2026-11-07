@@ -457,6 +457,12 @@
                         Icon="{ui:FontIcon Glyph=&#xE789;}"
                         Tapped="WhatIsNewItem_Tapped" />
                     <NavigationViewItem
+                        x:Name="DeveloperNavigationItem"
+                        x:Uid="Developer_NavViewItem"
+                        helpers:NavHelper.NavigateTo="views:DeveloperPage"
+                        AutomationProperties.AutomationId="DeveloperNavItem"
+                        Icon="{ui:FontIcon Glyph=&#xE7BE;}" />
+                    <NavigationViewItem
                         x:Name="FeedbackNavigationItem"
                         x:Uid="Feedback_NavViewItem"
                         AutomationProperties.AutomationId="FeedbackNavItem"

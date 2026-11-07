@@ -1,0 +1,63 @@
+name: Offline Translation Model Problem
+description: Report issues downloading, installing, verifying, or loading local translation packages
+labels: ["Offline-Translator", "Model-Management", "Triage-Needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report an issue with the local translation model packages (`translate-ar_en` or `translate-en_ar`).
+        > **Privacy Reminder:** Do not upload private clipboard contents, personal files, or sensitive credentials.
+  - type: dropdown
+    id: package_affected
+    attributes:
+      label: Model Package Affected
+      options:
+        - "Arabic -> English (translate-ar_en.argosmodel)"
+        - "English -> Arabic (translate-en_ar.argosmodel)"
+        - "Both Models"
+        - "Package Manager / Model Catalog"
+    validations:
+      required: true
+  - type: dropdown
+    id: problem_type
+    attributes:
+      label: Problem Type
+      options:
+        - "Download Failed / Network Timeout"
+        - "SHA-256 Checksum Mismatch"
+        - "Extraction / Installation Error"
+        - "Engine Fails to Load Model on Startup"
+        - "Out of Disk Space / Permission Denied"
+        - "Other"
+    validations:
+      required: true
+  - type: textarea
+    id: error_details
+    attributes:
+      label: Error Details / Logs
+      description: Describe what happened or paste any non-sensitive error messages displayed in Settings or runner logs.
+    validations:
+      required: true
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Provide step-by-step instructions.
+      placeholder: |
+        1. Open PowerTool Settings -> Offline Translator.
+        2. Click 'Download Model' for English -> Arabic.
+        3. Observe the error.
+    validations:
+      required: true
+  - type: input
+    id: storage_path
+    attributes:
+      label: Model Storage Directory
+      placeholder: "%LOCALAPPDATA%\\Microsoft\\PowerToys\\OfflineTranslator\\models"
+  - type: input
+    id: environment
+    attributes:
+      label: Windows & PowerTool Version
+      placeholder: "e.g. Windows 11 23H2 x64, PowerTool Extended Edition v0.88.0"
+    validations:
+      required: true

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -316,7 +316,7 @@ namespace Microsoft.PowerToys.Settings.UI.Views
 
         private async void FeedbackItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            await Launcher.LaunchUriAsync(new Uri("https://aka.ms/powerToysGiveFeedback"));
+            await Launcher.LaunchUriAsync(new Uri("https://github.com/En-Dhiaa/PowerToys/issues/new/choose"));
         }
 
         private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

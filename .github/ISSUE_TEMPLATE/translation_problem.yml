@@ -1,0 +1,49 @@
+name: Translation Problem (Offline Translator)
+description: Report an inaccurate translation or crash in the Offline Arabic/English Translator
+labels: ["Offline-Translator", "Translation-Bug", "Triage-Needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report a translation error or offline engine failure in **Offline Translator**.
+        > **Privacy Reminder:** Do not submit private, confidential, or password-bearing text.
+  - type: dropdown
+    id: direction
+    attributes:
+      label: Translation Direction
+      options:
+        - "Arabic -> English"
+        - "English -> Arabic"
+    validations:
+      required: true
+  - type: textarea
+    id: source_text
+    attributes:
+      label: Non-sensitive Source Text
+      description: The input text that triggered the issue (or a sanitized equivalent).
+    validations:
+      required: true
+  - type: textarea
+    id: actual_translation
+    attributes:
+      label: Actual Offline Output
+      description: The translated text produced by the local engine (or error message).
+    validations:
+      required: true
+  - type: textarea
+    id: expected_translation
+    attributes:
+      label: Expected / Correct Translation
+      description: What the accurate translation should be.
+    validations:
+      required: true
+  - type: input
+    id: model_version
+    attributes:
+      label: Installed Model Version
+      placeholder: "e.g. 1.0 (from PowerTool Settings > Offline Translator)"
+  - type: input
+    id: environment
+    attributes:
+      label: Windows & PowerTool Version
+      placeholder: "e.g. Windows 11 x64, PowerTool Extended Edition v0.88.0"

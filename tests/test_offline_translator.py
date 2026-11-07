@@ -101,3 +101,4 @@ def test_strictly_offline_execution_network_blocked(translator, monkeypatch):
     res = translator.translate("This is an offline test.", from_code="en", to_code="ar")
     assert len(res.translated_text) > 0
     assert any(0x0600 <= ord(ch) <= 0x06FF for ch in res.translated_text)
+

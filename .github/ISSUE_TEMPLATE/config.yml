@@ -1,9 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: "\U0001F4DA PowerToys user documentation"
-    url: https://aka.ms/powertoys-docs
-    about: Documentation for users of PowerToys utilities
-  - name: "\U0001F4DA PowerToys dev documentation"
-    url: https://github.com/microsoft/PowerToys/tree/main/doc/devdocs
-    about: Documentation for people interested in developing and contributing for PowerToys
- 
+  - name: "\U0001F468\u200D\U0001F4BB Developer Profile (En-Dhiaa)"
+    url: https://github.com/En-Dhiaa
+    about: Connect with En-Dhiaa, the developer of PowerTool Extended Edition
+  - name: "\U0001F4DA PowerTool Extended Edition User Guide"
+    url: https://github.com/En-Dhiaa/PowerToys/blob/main/docs/EXTENDED_EDITION_USER_GUIDE.md
+    about: Read user documentation for Offline Translator and Keyboard Layout Converter
+  - name: "\U0001F4DA Upstream Microsoft PowerToys Docs"
+    url: https://learn.microsoft.com/windows/powertoys/
+    about: Original documentation for standard upstream PowerToys utilities

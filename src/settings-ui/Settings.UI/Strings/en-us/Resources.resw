@@ -2554,6 +2554,9 @@ From there, simply click on one of the supported files in the File Explorer and 
   <data name="WhatIsNew_NavViewItem.Content" xml:space="preserve">
     <value>What's new</value>
   </data>
+  <data name="Developer_NavViewItem.Content" xml:space="preserve">
+    <value>About &amp; Developer</value>
+  </data>
   <data name="Feedback_NavViewItem.Content" xml:space="preserve">
     <value>Give feedback</value>
   </data>

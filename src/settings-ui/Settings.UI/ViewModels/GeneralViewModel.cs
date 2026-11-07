@@ -290,7 +290,7 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
 
             var info = $"OS Version: {GetOSVersion()} \n.NET Version: {GetDotNetVersion()}\n{isElevatedString}\nInstall scope: {installScope}\nVersion channel: {GetPowerToysVersionChannel()}\nSource commit: {GetPowerToysSourceCommit()}\nOperating System Language: {CultureInfo.InstalledUICulture.DisplayName}\nSystem locale: {CultureInfo.InstalledUICulture.Name}";
 
-            var gitHubURL = "https://github.com/microsoft/PowerToys/issues/new?template=bug_report.yml&labels=Issue-Bug%2CTriage-Needed" +
+            var gitHubURL = "https://github.com/En-Dhiaa/PowerToys/issues/new?template=bug_report.yml&labels=Issue-Bug%2CTriage-Needed" +
                 "&version=" + version + "&additionalInfo=" + System.Web.HttpUtility.UrlEncode(info);
 
             ReportBugLink = gitHubURL;

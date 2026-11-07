@@ -74,3 +74,4 @@ namespace PowerTool::KeyboardLayout
         std::unordered_map<wchar_t, wchar_t> m_arToEn102Single;
     };
 }
+

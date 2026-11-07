@@ -479,6 +479,9 @@ namespace Microsoft.PowerToys.Settings.UI
                 case "CmdPal": return typeof(CmdPalPage);
                 case "ZoomIt": return typeof(ZoomItPage);
                 case "GrabAndMove": return typeof(GrabAndMovePage);
+                case "KeyboardLayoutConverter": return typeof(KeyboardLayoutConverterPage);
+                case "OfflineTranslator": return typeof(OfflineTranslatorPage);
+                case "Developer": return typeof(DeveloperPage);
                 default:
                     // Fallback to Dashboard
                     Debug.Assert(false, "Unexpected SettingsWindow argument value");

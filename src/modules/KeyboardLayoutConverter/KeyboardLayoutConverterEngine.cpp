@@ -483,3 +483,4 @@ namespace PowerTool::KeyboardLayout
         return true;
     }
 }
+

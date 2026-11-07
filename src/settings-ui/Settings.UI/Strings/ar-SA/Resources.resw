@@ -52,6 +52,9 @@
     <value>مسؤول: إعدادات PowerTool</value>
   </data>
   
+  <data name="Developer_NavViewItem.Content" xml:space="preserve">
+    <value>المطور وحول PowerTool</value>
+  </data>
   <data name="Shell_KeyboardLayoutConverter.Content" xml:space="preserve">
     <value>مصحح تخطيط لوحة المفاتيح</value>
   </data>
@@ -73,3 +76,4 @@
     <value>ترجمة عصبية محلية بالكامل بين اللغتين العربية والإنجليزية دون الحاجة للاتصال بالإنترنت.</value>
   </data>
 </root>
+

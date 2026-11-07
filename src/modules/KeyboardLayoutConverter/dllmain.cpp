@@ -169,3 +169,4 @@ extern "C" __declspec(dllexport) PowertoyModuleIface* __cdecl powertoy_create()
 {
     return new KeyboardLayoutConverterModule();
 }
+

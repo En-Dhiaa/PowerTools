@@ -1,0 +1,46 @@
+name: Keyboard Layout Conversion Problem
+description: Report an inaccurate character mapping or issue in Keyboard Layout Converter
+labels: ["Keyboard-Layout-Converter", "Layout-Bug", "Triage-Needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report an issue with cross-typed Arabic/English physical key conversion.
+        > **Privacy Reminder:** Do not submit private passwords or confidential text.
+  - type: dropdown
+    id: active_layout
+    attributes:
+      label: Active Windows Keyboard Layout
+      options:
+        - "Arabic (101) - Standard"
+        - "Arabic (102) - Enhanced"
+        - "English (US) QWERTY"
+        - "Other layout"
+    validations:
+      required: true
+  - type: textarea
+    id: typed_text
+    attributes:
+      label: Text Typed (Incorrect Layout)
+      description: The text that was typed while the wrong layout was active (e.g. 'لخ اخةث ىخص').
+    validations:
+      required: true
+  - type: textarea
+    id: actual_converted
+    attributes:
+      label: Actual Output after Conversion Shortcut
+      description: What PowerTool converted the text to.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_text
+    attributes:
+      label: Expected Intended Text
+      description: What the text was originally meant to be (e.g. 'go home now').
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Windows & PowerTool Version
+      placeholder: "e.g. Windows 11 x64, PowerTool Extended Edition v0.88.0"

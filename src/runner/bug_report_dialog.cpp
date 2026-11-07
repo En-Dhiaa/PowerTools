@@ -159,7 +159,7 @@ namespace
     void OpenIssuePage(const std::wstring& zipPath)
     {
         const std::wstring url =
-            L"https://github.com/microsoft/PowerToys/issues/new?template=bug_report.yml&labels=Issue-Bug%2CTriage-Needed&version=" +
+            L"https://github.com/En-Dhiaa/PowerToys/issues/new?template=bug_report.yml&labels=Issue-Bug%2CTriage-Needed&version=" +
             get_product_version();
         ShellExecuteW(nullptr, L"open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 

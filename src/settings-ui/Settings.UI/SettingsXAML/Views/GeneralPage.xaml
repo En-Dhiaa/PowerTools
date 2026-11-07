@@ -1,4 +1,4 @@
-﻿<local:NavigablePage
+<local:NavigablePage
     x:Class="Microsoft.PowerToys.Settings.UI.Views.GeneralPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -141,6 +141,14 @@
                             </tkcontrols:SettingsExpander.Items>
                         </tkcontrols:SettingsExpander>
                     </controls:GPOInfoControl>
+                    <tkcontrols:SettingsCard
+                        Header="PowerTool Extended Edition"
+                        Description="Enhanced community edition by En-Dhiaa featuring Offline Arabic/English Translator and Keyboard Layout Converter."
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE77B;}">
+                        <HyperlinkButton
+                            Content="Developer Profile"
+                            NavigateUri="https://github.com/En-Dhiaa" />
+                    </tkcontrols:SettingsCard>
                 </controls:SettingsGroup>
 
                 <controls:SettingsGroup x:Uid="StartupAndPermissions">
@@ -456,9 +464,9 @@
         </controls:SettingsPageControl.ModuleContent>
         <controls:SettingsPageControl.PrimaryLinks>
             <controls:PageLink x:Uid="GeneralPage_Documentation" Link="https://aka.ms/PowerToysOverview" />
-            <controls:PageLink x:Uid="General_Repository" Link="https://aka.ms/powertoys" />
+            <controls:PageLink x:Uid="General_Repository" Link="https://github.com/En-Dhiaa/PowerToys" />
             <controls:PageLink x:Uid="GeneralPage_ReportAbug" Link="{x:Bind ViewModel.ReportBugLink, Mode=OneWay}" />
-            <controls:PageLink x:Uid="GeneralPage_RequestAFeature_URL" Link="https://aka.ms/powerToysRequestFeature" />
+            <controls:PageLink x:Uid="GeneralPage_RequestAFeature_URL" Link="https://github.com/En-Dhiaa/PowerToys/issues/new?template=feature_request.yml" />
         </controls:SettingsPageControl.PrimaryLinks>
         <controls:SettingsPageControl.SecondaryLinks>
             <controls:PageLink x:Uid="GeneralPage_PrivacyStatement_URL" Link="http://go.microsoft.com/fwlink/?LinkId=521839" />

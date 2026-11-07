@@ -59,3 +59,61 @@ def test_settings_window_title_branding():
         content = f.read()
     assert "<value>PowerTool Settings</value>" in content
     assert "<value>Administrator: PowerTool Settings</value>" in content
+
+
+def test_developer_profile_attribution():
+    """Verify developer identity (En-Dhiaa) and GitHub links in Settings & ViewModels"""
+    dev_vm = os.path.join(REPO_ROOT, "src", "settings-ui", "Settings.UI", "ViewModels", "DeveloperViewModel.cs")
+    assert os.path.isfile(dev_vm)
+    with open(dev_vm, "r", encoding="utf-8") as f:
+        vm_text = f.read()
+    assert '"En-Dhiaa"' in vm_text
+    assert '"https://github.com/En-Dhiaa"' in vm_text
+    assert '"https://github.com/En-Dhiaa/PowerToys/issues/new/choose"' in vm_text
+
+    dev_view = os.path.join(REPO_ROOT, "src", "settings-ui", "Settings.UI", "SettingsXAML", "Views", "DeveloperPage.xaml")
+    assert os.path.isfile(dev_view)
+    with open(dev_view, "r", encoding="utf-8") as f:
+        view_text = f.read()
+    assert "En-Dhiaa" in view_text
+    assert "https://github.com/En-Dhiaa" in view_text
+
+
+def test_custom_issue_reporting_urls():
+    """Verify custom issue reporting URL destinations point to En-Dhiaa repository"""
+    bug_cpp = os.path.join(REPO_ROOT, "src", "runner", "bug_report_dialog.cpp")
+    with open(bug_cpp, "r", encoding="utf-8") as f:
+        cpp_text = f.read()
+    assert "https://github.com/En-Dhiaa/PowerToys/issues/new" in cpp_text
+
+    gen_vm = os.path.join(REPO_ROOT, "src", "settings-ui", "Settings.UI", "ViewModels", "GeneralViewModel.cs")
+    with open(gen_vm, "r", encoding="utf-8") as f:
+        gen_text = f.read()
+    assert "https://github.com/En-Dhiaa/PowerToys/issues/new?template=bug_report.yml" in gen_text
+
+    shell_cs = os.path.join(REPO_ROOT, "src", "settings-ui", "Settings.UI", "SettingsXAML", "Views", "ShellPage.xaml.cs")
+    with open(shell_cs, "r", encoding="utf-8") as f:
+        shell_text = f.read()
+    assert "https://github.com/En-Dhiaa/PowerToys/issues/new/choose" in shell_text
+
+
+def test_issue_templates_complete():
+    """Verify all 5 required issue templates and config exist with privacy reminders"""
+    templates_dir = os.path.join(REPO_ROOT, ".github", "ISSUE_TEMPLATE")
+    expected_files = [
+        "config.yml",
+        "bug_report.yml",
+        "feature_request.yml",
+        "translation_problem.yml",
+        "keyboard_layout_conversion_problem.yml",
+        "offline_translation_model_problem.yml",
+    ]
+    for fn in expected_files:
+        p = os.path.join(templates_dir, fn)
+        assert os.path.isfile(p), f"Issue template missing: {fn}"
+        with open(p, "r", encoding="utf-8") as f:
+            content = f.read()
+        if fn in ["bug_report.yml", "translation_problem.yml", "keyboard_layout_conversion_problem.yml", "offline_translation_model_problem.yml"]:
+            assert any(kw in content.lower() for kw in ["privacy", "private", "sensitive"])
+
+
