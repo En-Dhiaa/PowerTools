@@ -511,6 +511,8 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
                 ModuleType.MeasureTool => GetModuleItemsMeasureTool(),
                 ModuleType.ShortcutGuide => GetModuleItemsShortcutGuide(),
                 ModuleType.PowerOCR => GetModuleItemsPowerOCR(),
+                ModuleType.KeyboardLayoutConverter => GetModuleItemsKeyboardLayoutConverter(),
+                ModuleType.OfflineTranslator => GetModuleItemsOfflineTranslator(),
                 _ => new ObservableCollection<DashboardModuleItem>(), // never called, all values listed above
             };
         }
@@ -886,6 +888,25 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
         {
             using var eventHandle = new EventWaitHandle(false, EventResetMode.AutoReset, Constants.MWBReconnectEvent());
             eventHandle.Set();
+        }
+
+        private ObservableCollection<DashboardModuleItem> GetModuleItemsKeyboardLayoutConverter()
+        {
+            var list = new List<DashboardModuleItem>
+            {
+                new DashboardModuleShortcutItem() { Label = "Convert Keyboard Layout", Shortcut = new List<object> { "Ctrl", "Alt", "Shift", "K" } },
+            };
+            return new ObservableCollection<DashboardModuleItem>(list);
+        }
+
+        private ObservableCollection<DashboardModuleItem> GetModuleItemsOfflineTranslator()
+        {
+            var list = new List<DashboardModuleItem>
+            {
+                new DashboardModuleShortcutItem() { Label = "Translate Selected Text", Shortcut = new List<object> { "Ctrl", "Alt", "T" } },
+                new DashboardModuleShortcutItem() { Label = "Reverse Translation Direction", Shortcut = new List<object> { "Ctrl", "Alt", "Shift", "T" } },
+            };
+            return new ObservableCollection<DashboardModuleItem>(list);
         }
 
         internal void DashboardListItemClick(object sender)

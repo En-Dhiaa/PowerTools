@@ -12,9 +12,9 @@
 #define PRODUCT_VERSION FILE_VERSION
 #define PRODUCT_VERSION_STRING FILE_VERSION_STRING
 
-#define COMPANY_NAME "PowerTool Contributors"
-#define COPYRIGHT_NOTE "Copyright (C) Microsoft Corporation & PowerTool Extended Edition Contributors. All rights reserved."
-#define PRODUCT_NAME "PowerTool"
+#define COMPANY_NAME "Powertool Contributors (Lead: En-Dhiaa)"
+#define COPYRIGHT_NOTE "Copyright (C) Microsoft Corporation & Powertool Contributors (En-Dhiaa). All rights reserved."
+#define PRODUCT_NAME "Powertool"
 
 #include <string>
 

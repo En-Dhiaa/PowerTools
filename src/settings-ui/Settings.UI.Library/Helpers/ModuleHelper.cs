@@ -84,6 +84,8 @@ namespace Microsoft.PowerToys.Settings.UI.Library.Helpers
                 ModuleType.Workspaces => generalSettingsConfig.Enabled.Workspaces,
                 ModuleType.GrabAndMove => generalSettingsConfig.Enabled.GrabAndMove,
                 ModuleType.ZoomIt => generalSettingsConfig.Enabled.ZoomIt,
+                ModuleType.KeyboardLayoutConverter => generalSettingsConfig.Enabled.KeyboardLayoutConverter,
+                ModuleType.OfflineTranslator => generalSettingsConfig.Enabled.OfflineTranslator,
                 ModuleType.GeneralSettings => generalSettingsConfig.EnableQuickAccess,
                 _ => false,
             };
@@ -128,6 +130,8 @@ namespace Microsoft.PowerToys.Settings.UI.Library.Helpers
                 case ModuleType.Workspaces: generalSettingsConfig.Enabled.Workspaces = isEnabled; break;
                 case ModuleType.GrabAndMove: generalSettingsConfig.Enabled.GrabAndMove = isEnabled; break;
                 case ModuleType.ZoomIt: generalSettingsConfig.Enabled.ZoomIt = isEnabled; break;
+                case ModuleType.KeyboardLayoutConverter: generalSettingsConfig.Enabled.KeyboardLayoutConverter = isEnabled; break;
+                case ModuleType.OfflineTranslator: generalSettingsConfig.Enabled.OfflineTranslator = isEnabled; break;
                 case ModuleType.GeneralSettings: generalSettingsConfig.EnableQuickAccess = isEnabled; break;
             }
         }
@@ -175,6 +179,8 @@ namespace Microsoft.PowerToys.Settings.UI.Library.Helpers
                 ModuleType.Workspaces => WorkspacesSettings.ModuleName,
                 ModuleType.GrabAndMove => GrabAndMoveSettings.ModuleName,
                 ModuleType.ZoomIt => ZoomItSettings.ModuleName,
+                ModuleType.KeyboardLayoutConverter => KeyboardLayoutConverterSettings.ModuleName,
+                ModuleType.OfflineTranslator => OfflineTranslatorSettings.ModuleName,
                 _ => moduleType.ToString(),
             };
         }

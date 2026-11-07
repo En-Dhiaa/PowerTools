@@ -2579,7 +2579,7 @@ From there, simply click on one of the supported files in the File Explorer and 
     <value>View on GitHub</value>
   </data>
   <data name="SettingsWindow_Title" xml:space="preserve">
-    <value>PowerTool Settings</value>
+    <value>Powertool Settings</value>
     <comment>Title of the settings window when running as user</comment>
   </data>
   <data name="Awake.ModuleTitle" xml:space="preserve">
@@ -4871,7 +4871,7 @@ Activate by holding the key for the character you want to add an accent to, then
     <value>Activation shortcut</value>
   </data>
   <data name="SettingsWindow_AdminTitle" xml:space="preserve">
-    <value>Administrator: PowerTool Settings</value>
+    <value>Administrator: Powertool Settings</value>
     <comment>Title of the settings window when running as administrator</comment>
   </data>
   <data name="DashboardTitle.Text" xml:space="preserve">

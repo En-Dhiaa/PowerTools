@@ -156,8 +156,8 @@ void handle_tray_command(HWND window, const WPARAM command_id, LPARAM lparam)
         if (!about_box_shown)
         {
             about_box_shown = true;
-            std::wstring about_msg = L"PowerTool Extended Edition\nVersion " + get_product_version() + L"\nBased on Microsoft PowerToys\n\xa9 2019-2026 Microsoft Corporation & Extended Edition Contributors";
-            MessageBoxW(nullptr, about_msg.c_str(), L"About PowerTool", MB_OK);
+            std::wstring about_msg = L"Powertool Extended Edition\nVersion " + get_product_version() + L"\nDeveloper: En-Dhiaa\nBased on Microsoft PowerToys\n\xa9 2019-2026 Microsoft Corporation & Powertool Contributors";
+            MessageBoxW(nullptr, about_msg.c_str(), L"About Powertool", MB_OK);
             about_box_shown = false;
         }
         break;
@@ -505,7 +505,7 @@ void start_tray_icon(bool isProcessElevated, bool theme_adaptive)
             pt_version_tooltip_stream << GET_RESOURCE_STRING(IDS_TRAY_ICON_ADMIN_TOOLTIP) << L": ";
         }
 
-        pt_version_tooltip_stream << L"PowerTool " << get_product_version() << '\0';
+        pt_version_tooltip_stream << L"Powertool " << get_product_version() << '\0';
         std::wstring pt_version_tooltip = pt_version_tooltip_stream.str();
         wcscpy_s(tray_icon_data.szTip, sizeof(tray_icon_data.szTip) / sizeof(WCHAR), pt_version_tooltip.c_str());
         tray_icon_data.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;

@@ -1,0 +1,14 @@
+Source: powertool
+Section: utils
+Priority: optional
+Maintainer: En-Dhiaa <en-dhiaa@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13), python3-all, python3-pyside6, python3-setuptools
+Standards-Version: 4.6.2
+Homepage: https://github.com/En-Dhiaa
+
+Package: powertool
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3-pyside6, python3-ctranslate2, python3-sentencepiece, wl-clipboard | xclip
+Description: Powertool Extended Edition - Offline Translator and Keyboard Layout Converter
+ Enhanced Windows and Linux productivity suite featuring offline Arabic/English
+ translation and physical layout text correction, developed by En-Dhiaa.

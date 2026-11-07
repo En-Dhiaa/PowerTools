@@ -241,3 +241,40 @@ def test_preserve_punctuation_option():
     res = KeyboardLayoutConverterPython.en_to_ar("hello?", preserve_punctuation=True)
     assert res.endswith("?")
 
+
+def test_engine_module_direct_verification():
+    """Verify the actual production KeyboardLayoutConverterEngine.py module"""
+    import sys
+    import os
+    mod_dir = os.path.join(os.path.dirname(__file__), "..", "src", "modules", "KeyboardLayoutConverter")
+    if mod_dir not in sys.path:
+        sys.path.insert(0, mod_dir)
+    from KeyboardLayoutConverterEngine import KeyboardLayoutConverterEngine
+
+    # Mandatory test case from Phase 14 prompt: 'go home now' -> 'لخ اخةث ىخص'
+    res, direction, conf = KeyboardLayoutConverterEngine.convert("go home now")
+    assert res == "لخ اخةث ىخص"
+    assert direction == "en_to_ar"
+    assert conf > 0.9
+
+    # Reverse direction verification
+    rev, rev_dir, rev_conf = KeyboardLayoutConverterEngine.convert(res)
+    assert rev == "go home now"
+    assert rev_dir == "ar_to_en"
+
+
+def test_arabic_101_and_102_layout_variants():
+    """Verify Arabic 101 and Arabic 102 mapping handling"""
+    import sys
+    import os
+    mod_dir = os.path.join(os.path.dirname(__file__), "..", "src", "modules", "KeyboardLayoutConverter")
+    if mod_dir not in sys.path:
+        sys.path.insert(0, mod_dir)
+    from KeyboardLayoutConverterEngine import KeyboardLayoutConverterEngine
+
+    res_101, _, _ = KeyboardLayoutConverterEngine.convert("hello world", layout="101")
+    res_102, _, _ = KeyboardLayoutConverterEngine.convert("hello world", layout="102")
+    assert res_101 == "اثممخ صخقمي"
+    assert res_102 == "اثممخ صخقمي"
+
+

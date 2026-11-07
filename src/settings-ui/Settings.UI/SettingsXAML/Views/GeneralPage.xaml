@@ -142,7 +142,7 @@
                         </tkcontrols:SettingsExpander>
                     </controls:GPOInfoControl>
                     <tkcontrols:SettingsCard
-                        Header="PowerTool Extended Edition"
+                        Header="Powertool Extended Edition"
                         Description="Enhanced community edition by En-Dhiaa featuring Offline Arabic/English Translator and Keyboard Layout Converter."
                         HeaderIcon="{ui:FontIcon Glyph=&#xE77B;}">
                         <HyperlinkButton

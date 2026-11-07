@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.endhiaa.Powertool</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Powertool</name>
+  <summary>Enhanced productivity suite featuring Offline Translation and Keyboard Layout Conversion</summary>
+  <description>
+    <p>
+      Powertool Extended Edition is an enhanced productivity suite developed independently by En-Dhiaa.
+      It brings offline neural machine translation (Arabic ↔ English), physical keyboard layout correction,
+      and extensive system tools to both Windows and Linux desktops (supporting GNOME, KDE, X11, and Wayland).
+    </p>
+    <ul>
+      <li>Offline Arabic/English Neural Translation (CTranslate2 &amp; SentencePiece)</li>
+      <li>Physical Keyboard Layout Converter (US QWERTY ↔ Arabic 101/102)</li>
+      <li>Global shortcuts and system tray integration</li>
+      <li>Zero cloud dependency, 100% private local execution</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">powertool.desktop</launchable>
+  <developer_name>En-Dhiaa</developer_name>
+  <url type="homepage">https://github.com/En-Dhiaa</url>
+  <url type="bugtracker">https://github.com/En-Dhiaa/PowerToys/issues</url>
+  <releases>
+    <release version="0.88.0" date="2026-11-07">
+      <description>
+        <p>Initial release of Powertool Extended Edition by En-Dhiaa featuring Offline Translator and Keyboard Layout Converter.</p>
+      </description>
+    </release>
+  </releases>
+  <content_rating type="oars-1.1" />
+</component>

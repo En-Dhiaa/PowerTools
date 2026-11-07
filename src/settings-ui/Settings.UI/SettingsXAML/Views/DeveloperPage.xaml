@@ -14,7 +14,7 @@
 
     <controls:SettingsPageControl
         x:Uid="Developer"
-        ModuleTitle="Developer &amp; About PowerTool"
+        ModuleTitle="Developer &amp; About Powertool"
         ModuleDescription="Independent Developer Profile, Community Edition Details, and Custom Issue Reporting"
         IsTabStop="False">
         <controls:SettingsPageControl.ModuleContent>
@@ -24,7 +24,7 @@
                 <controls:SettingsGroup Header="Developer Profile">
                     <tkcontrols:SettingsCard
                         Header="En-Dhiaa"
-                        Description="Independent Developer &amp; Architect of PowerTool Extended Edition"
+                        Description="Independent Developer &amp; Architect of Powertool Extended Edition"
                         HeaderIcon="{ui:FontIcon Glyph=&#xE77B;}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <HyperlinkButton
@@ -84,7 +84,7 @@
                 <!-- Version, Licensing & Attribution -->
                 <controls:SettingsGroup Header="Attribution &amp; Licensing">
                     <tkcontrols:SettingsCard
-                        Header="PowerTool Version"
+                        Header="Powertool Version"
                         Description="{x:Bind ViewModel.AppVersion, Mode=OneWay}"
                         HeaderIcon="{ui:FontIcon Glyph=&#xE896;}">
                         <Border

@@ -17,7 +17,34 @@ if CURRENT_DIR not in sys.path:
 from OfflineTranslatorEngine import OfflineTranslator, ModelManager, TranslationResult, ModelNotInstalledError
 
 
-def get_selected_text_windows() -> str:
+def get_selected_text_linux() -> str:
+    """Captures selected text on Linux using Wayland (wl-paste) or X11 (xclip)"""
+    import subprocess
+    try:
+        if os.environ.get("WAYLAND_DISPLAY"):
+            res = subprocess.run(["wl-paste", "--primary"], capture_output=True, text=True, timeout=1)
+            if res.returncode == 0 and res.stdout.strip():
+                return res.stdout
+            res2 = subprocess.run(["wl-paste"], capture_output=True, text=True, timeout=1)
+            if res2.returncode == 0:
+                return res2.stdout
+        # X11 fallback
+        res = subprocess.run(["xclip", "-out", "-selection", "primary"], capture_output=True, text=True, timeout=1)
+        if res.returncode == 0 and res.stdout.strip():
+            return res.stdout
+        res2 = subprocess.run(["xclip", "-out", "-selection", "clipboard"], capture_output=True, text=True, timeout=1)
+        if res2.returncode == 0:
+            return res2.stdout
+    except Exception:
+        pass
+    return ""
+
+
+def get_selected_text() -> str:
+    if sys.platform == "win32":
+        return get_selected_text_windows()
+    else:
+        return get_selected_text_linux()
     """Safely captures selected text using Windows clipboard without destroying previous contents"""
     try:
         import ctypes
@@ -136,7 +163,7 @@ def main():
     if args.popup:
         text = args.text
         if not text:
-            text = get_selected_text_windows()
+            text = get_selected_text()
 
         from OfflineTranslatorUI import launch_popup
         launch_popup(text)
@@ -145,7 +172,7 @@ def main():
     # Direct CLI Translation
     text = args.text
     if not text:
-        text = get_selected_text_windows()
+        text = get_selected_text()
 
     if not text:
         print(json.dumps({"error": "No text provided or selected"}))

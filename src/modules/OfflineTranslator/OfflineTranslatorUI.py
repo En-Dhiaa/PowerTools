@@ -39,6 +39,114 @@ class TranslationWorker(QThread):
             self.error_signal.emit(f"Translation error: {str(e)}")
 
 
+class ModelManagerDialog(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent, Qt.Window)
+        self.setWindowTitle("Powertool Offline Translation Models")
+        self.resize(520, 360)
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #202020;
+                color: #FFFFFF;
+                font-family: 'Segoe UI', sans-serif;
+            }
+            QFrame.modelCard {
+                background-color: #2A2A2A;
+                border: 1px solid #3E3E3E;
+                border-radius: 8px;
+                padding: 12px;
+            }
+            QPushButton {
+                background-color: #333333;
+                border: 1px solid #444444;
+                border-radius: 6px;
+                color: #FFFFFF;
+                padding: 6px 12px;
+            }
+            QPushButton:hover { background-color: #3E3E3E; }
+            QPushButton#primaryBtn { background-color: #0078D4; font-weight: bold; }
+        """)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(16, 16, 16, 16)
+        layout.setSpacing(12)
+
+        header = QLabel("Offline Translation Models (CTranslate2 & Argos)")
+        header.setFont(QFont("Segoe UI", 12, QFont.Bold))
+        layout.addWidget(header)
+
+        sub = QLabel("Models run 100% locally on CPU without internet connectivity.")
+        sub.setStyleSheet("color: #888; font-size: 11px;")
+        layout.addWidget(sub)
+
+        self.cards_layout = QVBoxLayout()
+        layout.addLayout(self.cards_layout)
+
+        self.refresh_models()
+
+        # Disk info
+        self.disk_label = QLabel()
+        self.disk_label.setStyleSheet("color: #777; font-size: 11px;")
+        layout.addWidget(self.disk_label)
+        self.update_disk_info()
+
+        close_btn = QPushButton("Close")
+        close_btn.clicked.connect(self.close)
+        layout.addWidget(close_btn, alignment=Qt.AlignRight)
+
+    def update_disk_info(self):
+        mgr = ModelManager()
+        info = mgr.get_disk_space_info()
+        self.disk_label.setText(f"Storage path: {info['path']} ({info.get('free_gb', 0)} GB free)")
+
+    def refresh_models(self):
+        # Clear existing
+        while self.cards_layout.count():
+            item = self.cards_layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+
+        mgr = ModelManager()
+        for pkg in mgr.list_packages():
+            card = QFrame()
+            card.setProperty("class", "modelCard")
+            c_layout = QHBoxLayout(card)
+            c_layout.setContentsMargins(10, 8, 10, 8)
+
+            info_layout = QVBoxLayout()
+            title = QLabel(f"{pkg['from_name']} ➔ {pkg['to_name']} ({pkg['size_mb']} MB)")
+            title.setFont(QFont("Segoe UI", 10, QFont.Bold))
+            status_text = "● Installed & Ready" if pkg['is_installed'] else "○ Not Installed"
+            status_color = "#4CAF50" if pkg['is_installed'] else "#FFA726"
+            status_lbl = QLabel(status_text)
+            status_lbl.setStyleSheet(f"color: {status_color}; font-size: 11px;")
+
+            info_layout.addWidget(title)
+            info_layout.addWidget(status_lbl)
+            c_layout.addLayout(info_layout, 1)
+
+            btn = QPushButton("Remove" if pkg['is_installed'] else "Download")
+            if not pkg['is_installed']:
+                btn.setObjectName("primaryBtn")
+            btn.clicked.connect(lambda ch, p=pkg: self.toggle_package(p))
+            c_layout.addWidget(btn)
+
+            self.cards_layout.addWidget(card)
+
+    def toggle_package(self, pkg):
+        mgr = ModelManager()
+        if pkg['is_installed']:
+            mgr.remove_package(pkg['from_code'], pkg['to_code'])
+            self.refresh_models()
+        else:
+            QMessageBox.information(self, "Download Model", f"Downloading {pkg['from_name']} ➔ {pkg['to_name']} model package ({pkg['size_mb']} MB)...")
+            try:
+                mgr.download_and_install_package(pkg['from_code'], pkg['to_code'])
+                self.refresh_models()
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to download model: {e}")
+
+
 class TranslatorPopup(QWidget):
     def __init__(self, initial_text: str = "", default_from: str = "auto", default_to: str = "auto"):
         super().__init__()
@@ -122,12 +230,16 @@ class TranslatorPopup(QWidget):
 
         # Header bar
         header_layout = QHBoxLayout()
-        title_label = QLabel("PowerTool Offline Translator")
+        title_label = QLabel("Powertool Offline Translator")
         title_font = QFont("Segoe UI", 12, QFont.Bold)
         title_label.setFont(title_font)
 
         badge_label = QLabel("● Strictly Offline")
         badge_label.setStyleSheet("color: #4CAF50; font-size: 11px; font-weight: bold;")
+
+        models_btn = QPushButton("📦 Models")
+        models_btn.setToolTip("Manage offline translation packages")
+        models_btn.clicked.connect(self.open_model_manager)
 
         close_btn = QPushButton("✕")
         close_btn.setFixedSize(28, 28)
@@ -136,6 +248,7 @@ class TranslatorPopup(QWidget):
 
         header_layout.addWidget(title_label)
         header_layout.addWidget(badge_label)
+        header_layout.addWidget(models_btn)
         header_layout.addStretch()
         header_layout.addWidget(close_btn)
         card_layout.addLayout(header_layout)
@@ -222,6 +335,10 @@ class TranslatorPopup(QWidget):
         if screen:
             geo = screen.availableGeometry()
             self.move((geo.width() - self.width()) // 2, (geo.height() - self.height()) // 2)
+
+    def open_model_manager(self):
+        self.model_dialog = ModelManagerDialog(self)
+        self.model_dialog.show()
 
     def on_text_edited(self):
         text = self.src_text.toPlainText()

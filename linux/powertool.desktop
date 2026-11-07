@@ -1,0 +1,25 @@
+[Desktop Entry]
+Name=Powertool
+GenericName=Windows & Linux Productivity Suite
+Comment=Enhanced productivity utilities: Offline Translator, Keyboard Layout Converter, and Window Tools
+Exec=python3 /usr/share/powertool/powertool-linux.py %U
+Icon=powertool
+Terminal=false
+Type=Application
+Categories=Utility;DesktopSettings;Translation;
+Keywords=powertoys;powertool;translator;keyboard;arabic;productivity;
+StartupNotify=true
+StartupWMClass=Powertool
+Actions=Translate;ConvertLayout;Developer;
+
+[Desktop Action Translate]
+Name=Offline Translator
+Exec=python3 /usr/share/powertool/powertool-linux.py --translator
+
+[Desktop Action ConvertLayout]
+Name=Keyboard Layout Converter
+Exec=python3 /usr/share/powertool/powertool-linux.py --converter
+
+[Desktop Action Developer]
+Name=Developer Profile (En-Dhiaa)
+Exec=python3 /usr/share/powertool/powertool-linux.py --developer
