@@ -40,3 +40,4 @@ rpmbuild --define "_topdir ${RPM_TOP}" -ba "${RPM_TOP}/SPECS/powertool.spec"
 cp "${RPM_TOP}"/RPMS/*/*.rpm "${OUTPUT_DIR}/"
 echo "=== RPM Package Successfully Created ==="
 echo "Output in ${OUTPUT_DIR}"
+

@@ -55,3 +55,4 @@ dpkg-deb --build --root-owner-group "${PKG_DIR}" "${OUTPUT_DIR}/powertool_${VERS
 
 echo "=== Debian Package Successfully Created ==="
 echo "Output: ${OUTPUT_DIR}/powertool_${VERSION}_all.deb"
+

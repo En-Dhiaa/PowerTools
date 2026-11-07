@@ -57,3 +57,4 @@ python3 -m pip install --upgrade --user ctranslate2 sentencepiece pillow pytest
 
 echo "=== Setup Complete! You can now launch Powertool: ==="
 echo "  python3 linux/powertool-linux.py"
+

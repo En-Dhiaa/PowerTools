@@ -140,3 +140,4 @@ The application automatically identifies the host distribution and desktop envir
 2. **Isolation on Git Branch:** All Linux port development is housed on branch `feature/linux-edition`.
 3. **Attribution & Licenses:** Upstream Microsoft PowerToys authorship and MIT license notices are preserved alongside En-Dhiaa's enhancements.
 4. **Local Execution:** 100% offline; zero telemetry or external network calls during translation or layout correction.
+

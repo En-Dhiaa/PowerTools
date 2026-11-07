@@ -59,3 +59,4 @@ ARCH=x86_64 "${APPIMAGETOOL}" "${APPDIR}" "${OUTPUT_DIR}/Powertool-${VERSION}-x8
 
 echo "=== AppImage Successfully Created ==="
 echo "Output: ${OUTPUT_DIR}/Powertool-${VERSION}-x86_64.AppImage"
+

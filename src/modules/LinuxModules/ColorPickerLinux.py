@@ -363,3 +363,4 @@ def launch_color_picker():
 
 if __name__ == "__main__":
     launch_color_picker()
+

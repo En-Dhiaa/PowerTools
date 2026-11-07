@@ -162,3 +162,4 @@ python3 linux/powertool-linux.py
 * **Lead Developer:** **En-Dhiaa** ([https://github.com/En-Dhiaa](https://github.com/En-Dhiaa))
 * **Submit Issues & Bug Reports:** [https://github.com/En-Dhiaa/PowerToys/issues/new/choose](https://github.com/En-Dhiaa/PowerToys/issues/new/choose)
 * **Original PowerToys Attribution:** This project is an independently developed extended suite based on Microsoft PowerToys, licensed under the MIT License. All original Microsoft copyrights and third-party notices are preserved.
+
