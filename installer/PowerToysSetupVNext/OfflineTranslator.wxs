@@ -1,0 +1,27 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <?include $(sys.CURRENTDIR)\Common.wxi?>
+
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Directory Id="OfflineTranslatorFolder" Name="OfflineTranslator" />
+    </DirectoryRef>
+
+    <ComponentGroup Id="OfflineTranslatorComponentGroup">
+      <Component Id="OfflineTranslatorModuleDll" Directory="INSTALLFOLDER" Guid="C7F3D8E2-5F29-4831-AE83-469B25CF93B2">
+        <File Id="PowerToys.OfflineTranslator.dll" Source="$(var.BinDir)PowerToys.OfflineTranslator.dll" KeyPath="yes" />
+      </Component>
+      
+      <Component Id="OfflineTranslatorEnginePy" Directory="OfflineTranslatorFolder" Guid="D8A4E9F3-603A-4942-BF94-57AC36DAA4C3">
+        <File Id="OfflineTranslatorEngine.py" Source="$(var.RepoDir)src\modules\OfflineTranslator\OfflineTranslatorEngine.py" KeyPath="yes" />
+      </Component>
+
+      <Component Id="OfflineTranslatorCLIPy" Directory="OfflineTranslatorFolder" Guid="E9B5FA04-714B-4A53-C0A5-68BD47EBB5D4">
+        <File Id="OfflineTranslatorCLI.py" Source="$(var.RepoDir)src\modules\OfflineTranslator\OfflineTranslatorCLI.py" KeyPath="yes" />
+      </Component>
+
+      <Component Id="OfflineTranslatorUIPy" Directory="OfflineTranslatorFolder" Guid="FA060B15-825C-4B64-D1B6-79CE58FCC6E5">
+        <File Id="OfflineTranslatorUI.py" Source="$(var.RepoDir)src\modules\OfflineTranslator\OfflineTranslatorUI.py" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

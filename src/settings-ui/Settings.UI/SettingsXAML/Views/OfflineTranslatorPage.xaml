@@ -1,0 +1,116 @@
+<local:NavigablePage
+    x:Class="Microsoft.PowerToys.Settings.UI.Views.OfflineTranslatorPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.PowerToys.Settings.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:Microsoft.PowerToys.Settings.UI.Helpers"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tkcontrols="using:CommunityToolkit.WinUI.Controls"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    xmlns:vm="using:Microsoft.PowerToys.Settings.UI.ViewModels"
+    AutomationProperties.LandmarkType="Main"
+    mc:Ignorable="d">
+
+    <controls:SettingsPageControl
+        x:Uid="OfflineTranslator"
+        ModuleTitle="Offline Translator"
+        ModuleDescription="Zero-cloud, strictly offline neural machine translation between Arabic and English powered by local CTranslate2 and SentencePiece."
+        IsTabStop="False">
+        <controls:SettingsPageControl.ModuleContent>
+            <StackPanel ChildrenTransitions="{StaticResource SettingsCardsAnimations}" Orientation="Vertical">
+
+                <!-- Enable Card -->
+                <tkcontrols:SettingsCard
+                    Header="Enable Offline Translator"
+                    Description="Translate text between Arabic and English offline using global shortcuts"
+                    HeaderIcon="{ui:BitmapIcon Source=/Assets/Settings/Icons/OfflineTranslator.png}">
+                    <ToggleSwitch
+                        IsOn="{x:Bind ViewModel.IsEnabled, Mode=TwoWay}" />
+                </tkcontrols:SettingsCard>
+
+                <!-- Translation Behavior -->
+                <controls:SettingsGroup Header="Translation Behavior" IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}">
+
+                    <tkcontrols:SettingsCard
+                        Header="Automatic Language Detection"
+                        Description="Detect whether selected text is Arabic or English automatically"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE8AB;}">
+                        <ToggleSwitch
+                            IsOn="{x:Bind ViewModel.AutoDetect, Mode=TwoWay}" />
+                    </tkcontrols:SettingsCard>
+
+                    <tkcontrols:SettingsCard
+                        Header="Direct Text Replacement"
+                        Description="Replace selected text in-place instead of opening the translation popup window"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE777;}">
+                        <ToggleSwitch
+                            IsOn="{x:Bind ViewModel.ReplaceSelectedText, Mode=TwoWay}" />
+                    </tkcontrols:SettingsCard>
+
+                </controls:SettingsGroup>
+
+                <!-- Global Shortcuts -->
+                <controls:SettingsGroup Header="Shortcuts" IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}">
+
+                    <tkcontrols:SettingsCard
+                        Header="Translate Selected Text"
+                        Description="Opens the floating offline translation popup for the current selection"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}">
+                        <controls:ShortcutControl
+                            HotkeySettings="{x:Bind ViewModel.TranslationHotkey, Mode=TwoWay}" />
+                    </tkcontrols:SettingsCard>
+
+                    <tkcontrols:SettingsCard
+                        Header="Reverse Translation Shortcut"
+                        Description="Translates in the reverse direction directly"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE895;}">
+                        <controls:ShortcutControl
+                            HotkeySettings="{x:Bind ViewModel.ReverseHotkey, Mode=TwoWay}" />
+                    </tkcontrols:SettingsCard>
+
+                </controls:SettingsGroup>
+
+                <!-- Offline Language Models Management -->
+                <controls:SettingsGroup Header="Offline Language Models" IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}">
+
+                    <tkcontrols:SettingsExpander
+                        Header="Installed Language Packages"
+                        Description="Manage local neural models stored on this machine for 100% offline translation"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE896;}"
+                        IsExpanded="True">
+
+                        <tkcontrols:SettingsExpander.Items>
+                            <ItemsControl ItemsSource="{x:Bind ViewModel.ModelItems, Mode=OneWay}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:TranslationModelItem">
+                                        <tkcontrols:SettingsCard
+                                            Header="{x:Bind FromName}"
+                                            Description="{x:Bind StatusText}">
+                                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                                <TextBlock
+                                                    VerticalAlignment="Center"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="{x:Bind SizeMb, Mode=OneWay}" />
+                                                <TextBlock
+                                                    VerticalAlignment="Center"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="MB" />
+                                                <Button
+                                                    Content="{x:Bind ActionButtonText}"
+                                                    Click="OnModelActionClick" />
+                                            </StackPanel>
+                                        </tkcontrols:SettingsCard>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </tkcontrols:SettingsExpander.Items>
+
+                    </tkcontrols:SettingsExpander>
+
+                </controls:SettingsGroup>
+
+            </StackPanel>
+        </controls:SettingsPageControl.ModuleContent>
+    </controls:SettingsPageControl>
+</local:NavigablePage>

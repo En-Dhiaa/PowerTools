@@ -629,6 +629,40 @@ namespace Microsoft.PowerToys.Settings.UI.Library
             }
         }
 
+        private bool keyboardLayoutConverter = true;
+
+        [JsonPropertyName("KeyboardLayoutConverter")]
+        public bool KeyboardLayoutConverter
+        {
+            get => keyboardLayoutConverter;
+            set
+            {
+                if (keyboardLayoutConverter != value)
+                {
+                    LogTelemetryEvent(value);
+                    keyboardLayoutConverter = value;
+                    NotifyChange();
+                }
+            }
+        }
+
+        private bool offlineTranslator = true;
+
+        [JsonPropertyName("OfflineTranslator")]
+        public bool OfflineTranslator
+        {
+            get => offlineTranslator;
+            set
+            {
+                if (offlineTranslator != value)
+                {
+                    LogTelemetryEvent(value);
+                    offlineTranslator = value;
+                    NotifyChange();
+                }
+            }
+        }
+
         private void NotifyChange()
         {
             notifyEnabledChangedAction?.Invoke();

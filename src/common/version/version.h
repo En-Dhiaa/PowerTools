@@ -12,9 +12,9 @@
 #define PRODUCT_VERSION FILE_VERSION
 #define PRODUCT_VERSION_STRING FILE_VERSION_STRING
 
-#define COMPANY_NAME "Microsoft Corporation"
-#define COPYRIGHT_NOTE "Copyright (C) Microsoft Corporation. All rights reserved."
-#define PRODUCT_NAME "PowerToys"
+#define COMPANY_NAME "PowerTool Contributors"
+#define COPYRIGHT_NOTE "Copyright (C) Microsoft Corporation & PowerTool Extended Edition Contributors. All rights reserved."
+#define PRODUCT_NAME "PowerTool"
 
 #include <string>
 

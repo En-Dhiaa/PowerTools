@@ -1,4 +1,4 @@
-﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
 
   <?include $(sys.CURRENTDIR)\Common.wxi?>
 
@@ -16,7 +16,7 @@
          - https://robmensching.com/blog/posts/2003/10/4/windows-installer-components-introduction/
            -->
 
-  <Package Name="PowerToys (Preview)" Language="1033" Version="$(var.Version)" Manufacturer="Microsoft Corporation" UpgradeCode="$(var.UpgradeCodeGUID)" Scope="$(var.InstallScope)">
+  <Package Name="PowerTool Extended Edition" Language="1033" Version="$(var.Version)" Manufacturer="PowerTool Open-Source Community" UpgradeCode="$(var.UpgradeCodeGUID)" Scope="$(var.InstallScope)">
 
 
       
@@ -39,7 +39,7 @@
 
     <Property Id="ARPPRODUCTICON" Value="powertoys.exe" />
 
-    <Feature Id="CoreFeature" Title="PowerToys" AllowAdvertise="no" TypicalDefault="install" Description="Contains all PowerToys features." AllowAbsent="no">
+    <Feature Id="CoreFeature" Title="PowerTool" AllowAdvertise="no" TypicalDefault="install" Description="Contains all PowerTool features and productivity utilities." AllowAbsent="no">
       <ComponentGroupRef Id="CoreComponents" />
       <ComponentGroupRef Id="BaseApplicationsComponentGroup" />
       <ComponentGroupRef Id="WinUI3ApplicationsComponentGroup" />
@@ -71,6 +71,8 @@
       <ComponentGroupRef Id="MonacoSRCHeatGenerated" />
       <ComponentGroupRef Id="WorkspacesComponentGroup" />
       <ComponentGroupRef Id="CmdPalComponentGroup" />
+      <ComponentGroupRef Id="KeyboardLayoutConverterComponentGroup" />
+      <ComponentGroupRef Id="OfflineTranslatorComponentGroup" />
     </Feature>
 
     <SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLFOLDER]" After="CostFinalize" Sequence="execute" />

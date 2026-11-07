@@ -80,6 +80,8 @@ namespace Microsoft.PowerToys.Settings.UI.Library
     [JsonSerializable(typeof(WorkspacesSettings))]
     [JsonSerializable(typeof(GrabAndMoveSettings))]
     [JsonSerializable(typeof(ZoomItSettings))]
+    [JsonSerializable(typeof(KeyboardLayoutConverterSettings))]
+    [JsonSerializable(typeof(OfflineTranslatorSettings))]
 
     // Properties Classes
     [JsonSerializable(typeof(AdvancedPasteProperties))]
@@ -123,6 +125,8 @@ namespace Microsoft.PowerToys.Settings.UI.Library
     [JsonSerializable(typeof(WorkspacesProperties))]
     [JsonSerializable(typeof(GrabAndMoveProperties))]
     [JsonSerializable(typeof(ZoomItProperties))]
+    [JsonSerializable(typeof(KeyboardLayoutConverterProperties))]
+    [JsonSerializable(typeof(OfflineTranslatorProperties))]
 
     // Base Property Types (used throughout settings)
     [JsonSerializable(typeof(BoolProperty))]
@@ -179,6 +183,8 @@ namespace Microsoft.PowerToys.Settings.UI.Library
     [JsonSerializable(typeof(SndPowerPreviewSettings))]
     [JsonSerializable(typeof(SndPowerRenameSettings))]
     [JsonSerializable(typeof(SndShortcutGuideSettings))]
+    [JsonSerializable(typeof(SndKeyboardLayoutConverterSettings))]
+    [JsonSerializable(typeof(SndOfflineTranslatorSettings))]
 
     // IPC Message Generic Wrapper Types (SndModuleSettings<T>)
     [JsonSerializable(typeof(SndModuleSettings<SndAutoHideCursorSettings>))]
@@ -194,6 +200,8 @@ namespace Microsoft.PowerToys.Settings.UI.Library
     [JsonSerializable(typeof(SndModuleSettings<SndPowerPreviewSettings>))]
     [JsonSerializable(typeof(SndModuleSettings<SndPowerRenameSettings>))]
     [JsonSerializable(typeof(SndModuleSettings<SndShortcutGuideSettings>))]
+    [JsonSerializable(typeof(SndModuleSettings<SndKeyboardLayoutConverterSettings>))]
+    [JsonSerializable(typeof(SndModuleSettings<SndOfflineTranslatorSettings>))]
 
     public partial class SettingsSerializationContext : JsonSerializerContext
     {

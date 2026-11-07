@@ -1,0 +1,79 @@
+<local:NavigablePage
+    x:Class="Microsoft.PowerToys.Settings.UI.Views.KeyboardLayoutConverterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.PowerToys.Settings.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:Microsoft.PowerToys.Settings.UI.Helpers"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tkcontrols="using:CommunityToolkit.WinUI.Controls"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    xmlns:vm="using:Microsoft.PowerToys.Settings.UI.ViewModels"
+    AutomationProperties.LandmarkType="Main"
+    mc:Ignorable="d">
+
+    <controls:SettingsPageControl
+        x:Uid="KeyboardLayoutConverter"
+        ModuleTitle="Keyboard Layout Converter"
+        ModuleDescription="Converts text incorrectly typed under the wrong keyboard layout (Arabic 101/102 and English US QWERTY) based on physical key positions."
+        IsTabStop="False">
+        <controls:SettingsPageControl.ModuleContent>
+            <StackPanel ChildrenTransitions="{StaticResource SettingsCardsAnimations}" Orientation="Vertical">
+                
+                <!-- Enable Card -->
+                <tkcontrols:SettingsCard
+                    Header="Enable Keyboard Layout Converter"
+                    Description="Convert cross-typed Arabic/English characters instantly across Windows applications"
+                    HeaderIcon="{ui:BitmapIcon Source=/Assets/Settings/Icons/KeyboardLayoutConverter.png}">
+                    <ToggleSwitch
+                        IsOn="{x:Bind ViewModel.IsEnabled, Mode=TwoWay}" />
+                </tkcontrols:SettingsCard>
+
+                <!-- Behavior Settings -->
+                <controls:SettingsGroup Header="Conversion Behavior" IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}">
+                    
+                    <tkcontrols:SettingsCard
+                        Header="Automatic Layout Detection"
+                        Description="Analyzes character distribution to determine whether text was intended as Arabic or English"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE8AB;}">
+                        <ToggleSwitch
+                            IsOn="{x:Bind ViewModel.AutoDetect, Mode=TwoWay}" />
+                    </tkcontrols:SettingsCard>
+
+                    <tkcontrols:SettingsCard
+                        Header="Arabic Keyboard Layout"
+                        Description="Select the physical Arabic layout standard used for mapping"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE765;}">
+                        <ComboBox SelectedIndex="{x:Bind ViewModel.TargetLayoutIndex, Mode=TwoWay}">
+                            <ComboBoxItem Content="Arabic (101) - Standard" />
+                            <ComboBoxItem Content="Arabic (102) - Enhanced" />
+                        </ComboBox>
+                    </tkcontrols:SettingsCard>
+
+                    <tkcontrols:SettingsCard
+                        Header="Preserve Punctuation and Symbols"
+                        Description="Keep original punctuation marks unchanged during conversion"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE8D2;}">
+                        <ToggleSwitch
+                            IsOn="{x:Bind ViewModel.PreservePunctuation, Mode=TwoWay}" />
+                    </tkcontrols:SettingsCard>
+
+                </controls:SettingsGroup>
+
+                <!-- Shortcuts Settings -->
+                <controls:SettingsGroup Header="Shortcuts" IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}">
+                    
+                    <tkcontrols:SettingsCard
+                        Header="Conversion Shortcut"
+                        Description="Select incorrectly typed text and press this shortcut to convert it in-place"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}">
+                        <controls:ShortcutControl
+                            HotkeySettings="{x:Bind ViewModel.ConversionHotkey, Mode=TwoWay}" />
+                    </tkcontrols:SettingsCard>
+
+                </controls:SettingsGroup>
+
+            </StackPanel>
+        </controls:SettingsPageControl.ModuleContent>
+    </controls:SettingsPageControl>
+</local:NavigablePage>

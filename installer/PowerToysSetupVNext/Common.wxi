@@ -18,6 +18,8 @@
   <?define RegistryPreviewProjectName="RegistryPreview"?>
   <?define PeekProjectName="Peek"?>
   <?define WorkspacesProjectName="Workspaces"?>
+  <?define KeyboardLayoutConverterProjectName="KeyboardLayoutConverter"?>
+  <?define OfflineTranslatorProjectName="OfflineTranslator"?>
   
   <?define RepoDir="$(var.ProjectDir)..\..\" ?>
   <?if $(var.Platform) = x64?>

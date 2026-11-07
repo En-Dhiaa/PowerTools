@@ -1,0 +1,11 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <?include $(sys.CURRENTDIR)\Common.wxi?>
+
+  <Fragment>
+    <ComponentGroup Id="KeyboardLayoutConverterComponentGroup" Directory="INSTALLFOLDER">
+      <Component Id="KeyboardLayoutConverterModuleDll" Guid="B6E2C7D1-4E18-4720-9D72-358A14BE92A1">
+        <File Id="PowerToys.KeyboardLayoutConverter.dll" Source="$(var.BinDir)PowerToys.KeyboardLayoutConverter.dll" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
