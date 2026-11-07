@@ -1,0 +1,13 @@
+{
+    "github.copilot.chat.reviewSelection.instructions": [
+        {
+            "file": ".github/prompts/review-pr.prompt.md"
+        }
+    ],
+    "github.copilot.chat.commitMessageGeneration.instructions": [
+        {
+            "file": ".github/prompts/create-commit-title.prompt.md"
+        }
+    ],
+    "sarif-viewer.connectToGithubCodeScanning": "on"
+}

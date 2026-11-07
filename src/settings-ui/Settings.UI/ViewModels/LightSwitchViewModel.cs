@@ -1,0 +1,941 @@
+﻿// Copyright (c) Microsoft Corporation
+// The Microsoft Corporation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+#nullable enable
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using ManagedCommon;
+using Microsoft.PowerToys.Settings.UI.Library;
+using Microsoft.PowerToys.Settings.UI.Library.Helpers;
+using Microsoft.PowerToys.Settings.UI.Library.Interfaces;
+using Microsoft.PowerToys.Settings.UI.SerializationContext;
+using PowerDisplay.Models;
+using PowerToys.GPOWrapper;
+using Settings.UI.Library;
+using Settings.UI.Library.Helpers;
+
+namespace Microsoft.PowerToys.Settings.UI.ViewModels
+{
+    public partial class LightSwitchViewModel : PageViewModelBase
+    {
+        private bool _isProfilesLoading;
+
+        protected override string ModuleName => LightSwitchSettings.ModuleName;
+
+        private Func<string, int> SendConfigMSG { get; }
+
+        private GeneralSettings GeneralSettingsConfig { get; set; }
+
+        public ObservableCollection<SearchLocation> SearchLocations { get; } = new();
+
+        public LightSwitchViewModel(ISettingsRepository<GeneralSettings> settingsRepository, LightSwitchSettings? initialSettings = null, Func<string, int>? ipcMSGCallBackFunc = null)
+        {
+            ArgumentNullException.ThrowIfNull(settingsRepository);
+            GeneralSettingsConfig = settingsRepository.SettingsConfig;
+            InitializeEnabledValue();
+
+            _moduleSettings = initialSettings ?? new LightSwitchSettings();
+            SendConfigMSG = ipcMSGCallBackFunc ?? (_ => 0);
+
+            AvailableScheduleModes = new ObservableCollection<string>
+            {
+                "Off",
+                "FixedHours",
+                "SunsetToSunrise",
+                "FollowNightLight",
+            };
+
+            IsPowerDisplayEnabled = GeneralSettingsConfig.Enabled.PowerDisplay;
+        }
+
+        public override Dictionary<string, HotkeySettings[]> GetAllHotkeySettings()
+        {
+            var hotkeysDict = new Dictionary<string, HotkeySettings[]>
+            {
+                [ModuleName] = [ToggleThemeActivationShortcut],
+            };
+
+            return hotkeysDict;
+        }
+
+        private void InitializeEnabledValue()
+        {
+            _enabledGpoRuleConfiguration = GPOWrapper.GetConfiguredLightSwitchEnabledValue();
+            if (_enabledGpoRuleConfiguration == GpoRuleConfigured.Disabled || _enabledGpoRuleConfiguration == GpoRuleConfigured.Enabled)
+            {
+                // Get the enabled state from GPO.
+                _enabledStateIsGPOConfigured = true;
+                _isEnabled = _enabledGpoRuleConfiguration == GpoRuleConfigured.Enabled;
+            }
+            else
+            {
+                _isEnabled = GeneralSettingsConfig.Enabled.LightSwitch;
+            }
+        }
+
+        private void SaveSettings()
+        {
+            SendConfigMSG(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{{ \"powertoys\": {{ \"{0}\": {1} }} }}",
+                    LightSwitchSettings.ModuleName,
+                    JsonSerializer.Serialize(_moduleSettings, SourceGenerationContextContext.Default.LightSwitchSettings)));
+        }
+
+        public LightSwitchSettings ModuleSettings
+        {
+            get => _moduleSettings;
+            set
+            {
+                if (_moduleSettings != value)
+                {
+                    _moduleSettings = value;
+
+                    RefreshModuleSettings();
+                }
+            }
+        }
+
+        internal bool IsRefreshingModuleSettings => _refreshingModuleSettings;
+
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+
+            set
+            {
+                if (_enabledStateIsGPOConfigured)
+                {
+                    // If it's GPO configured, shouldn't be able to change this state.
+                    return;
+                }
+
+                if (value != _isEnabled)
+                {
+                    _isEnabled = value;
+
+                    // Set the status in the general settings configuration
+                    GeneralSettingsConfig.Enabled.LightSwitch = value;
+                    OutGoingGeneralSettings snd = new OutGoingGeneralSettings(GeneralSettingsConfig);
+
+                    SendConfigMSG(snd.ToString());
+                    OnPropertyChanged(nameof(IsEnabled));
+                }
+            }
+        }
+
+        public bool IsEnabledGpoConfigured
+        {
+            get => _enabledStateIsGPOConfigured;
+        }
+
+        public GpoRuleConfigured EnabledGPOConfiguration
+        {
+            get => _enabledGpoRuleConfiguration;
+            set
+            {
+                if (_enabledGpoRuleConfiguration != value)
+                {
+                    _enabledGpoRuleConfiguration = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public string ScheduleMode
+        {
+            get => ModuleSettings.Properties.ScheduleMode.Value;
+            set
+            {
+                if (_refreshingModuleSettings || ModuleSettings.Properties.ScheduleMode.Value == value)
+                {
+                    return;
+                }
+
+                ModuleSettings.Properties.ScheduleMode.Value = value;
+                OnPropertyChanged(nameof(ScheduleMode));
+
+                if (ModuleSettings.Properties.ScheduleMode.Value == "FixedHours")
+                {
+                    LightTime = 360;
+                    DarkTime = 1080;
+                    SunsetTimeSpan = null;
+                    SunriseTimeSpan = null;
+
+                    OnPropertyChanged(nameof(LightTimePickerValue));
+                    OnPropertyChanged(nameof(DarkTimePickerValue));
+                }
+
+                if (ModuleSettings.Properties.ScheduleMode.Value == "SunsetToSunrise")
+                {
+                    if (ModuleSettings.Properties.Latitude != "0.0" && ModuleSettings.Properties.Longitude != "0.0")
+                    {
+                        double lat = double.Parse(ModuleSettings.Properties.Latitude.Value, CultureInfo.InvariantCulture);
+                        double lon = double.Parse(ModuleSettings.Properties.Longitude.Value, CultureInfo.InvariantCulture);
+                        UpdateSunTimes(lat, lon);
+                    }
+                }
+            }
+        }
+
+        public ObservableCollection<string> AvailableScheduleModes { get; }
+
+        public bool ChangeSystem
+        {
+            get => ModuleSettings.Properties.ChangeSystem.Value;
+            set
+            {
+                if (!_refreshingModuleSettings && ModuleSettings.Properties.ChangeSystem.Value != value)
+                {
+                    ModuleSettings.Properties.ChangeSystem.Value = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool ChangeApps
+        {
+            get => ModuleSettings.Properties.ChangeApps.Value;
+            set
+            {
+                if (!_refreshingModuleSettings && ModuleSettings.Properties.ChangeApps.Value != value)
+                {
+                    ModuleSettings.Properties.ChangeApps.Value = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public int LightTime
+        {
+            get => ModuleSettings.Properties.LightTime.Value;
+            set
+            {
+                if (!_refreshingModuleSettings && ModuleSettings.Properties.LightTime.Value != value)
+                {
+                    ModuleSettings.Properties.LightTime.Value = value;
+                    NotifyPropertyChanged();
+
+                    OnPropertyChanged(nameof(LightTimeTimeSpan));
+                    OnPropertyChanged(nameof(SunriseOffsetMin));
+                    OnPropertyChanged(nameof(SunsetOffsetMin));
+
+                    if (ScheduleMode == "SunsetToSunrise")
+                    {
+                        SunriseTimeSpan = TimeSpan.FromMinutes(value);
+                    }
+                }
+            }
+        }
+
+        public int DarkTime
+        {
+            get => ModuleSettings.Properties.DarkTime.Value;
+            set
+            {
+                if (!_refreshingModuleSettings && ModuleSettings.Properties.DarkTime.Value != value)
+                {
+                    ModuleSettings.Properties.DarkTime.Value = value;
+                    NotifyPropertyChanged();
+
+                    OnPropertyChanged(nameof(DarkTimeTimeSpan));
+                    OnPropertyChanged(nameof(SunriseOffsetMax));
+                    OnPropertyChanged(nameof(SunsetOffsetMax));
+
+                    if (ScheduleMode == "SunsetToSunrise")
+                    {
+                        SunsetTimeSpan = TimeSpan.FromMinutes(value);
+                    }
+                }
+            }
+        }
+
+        public int SunriseOffset
+        {
+            get => ModuleSettings.Properties.SunriseOffset.Value;
+            set
+            {
+                if (!_refreshingModuleSettings && ModuleSettings.Properties.SunriseOffset.Value != value)
+                {
+                    ModuleSettings.Properties.SunriseOffset.Value = value;
+                    OnPropertyChanged(nameof(LightTimeTimeSpan));
+                    OnPropertyChanged(nameof(SunriseOffsetMin));
+                    OnPropertyChanged(nameof(SunriseOffsetMax));
+                    OnPropertyChanged(nameof(SunsetOffsetMin));
+                }
+            }
+        }
+
+        public int SunsetOffset
+        {
+            get => ModuleSettings.Properties.SunsetOffset.Value;
+            set
+            {
+                if (!_refreshingModuleSettings && ModuleSettings.Properties.SunsetOffset.Value != value)
+                {
+                    ModuleSettings.Properties.SunsetOffset.Value = value;
+                    OnPropertyChanged(nameof(DarkTimeTimeSpan));
+                    OnPropertyChanged(nameof(SunriseOffsetMax));
+                    OnPropertyChanged(nameof(SunsetOffsetMin));
+                    OnPropertyChanged(nameof(SunsetOffsetMax));
+                }
+            }
+        }
+
+        // A saved offset can fall outside today's range as solar times change.
+        // Keep it visible without rewriting settings during a refresh. User edits
+        // toward the normal range tighten these bounds again.
+        public int SunriseOffsetMin
+        {
+            get
+            {
+                // Normal minimum: adjusted sunrise stays at or after 00:00.
+                return Math.Min(-DisplayLightMinutes, SunriseOffset);
+            }
+        }
+
+        public int SunriseOffsetMax
+        {
+            get
+            {
+                // Normal maximum: adjusted sunrise stays before adjusted sunset.
+                int adjustedSunset = DisplayDarkMinutes + SunsetOffset;
+                return Math.Max(SunriseOffset, Math.Max(0, adjustedSunset - DisplayLightMinutes - 1));
+            }
+        }
+
+        public int SunsetOffsetMin
+        {
+            get
+            {
+                // Normal minimum: adjusted sunset stays after adjusted sunrise.
+                int adjustedSunrise = DisplayLightMinutes + SunriseOffset;
+                return Math.Min(SunsetOffset, Math.Min(0, adjustedSunrise - DisplayDarkMinutes + 1));
+            }
+        }
+
+        public int SunsetOffsetMax
+        {
+            get
+            {
+                // Normal maximum: adjusted sunset stays at or before 23:59.
+                return Math.Max(1439 - DisplayDarkMinutes, SunsetOffset);
+            }
+        }
+
+        // === Computed projections (OneWay bindings only) ===
+        private int DisplayLightMinutes => ScheduleMode == "SunsetToSunrise" && SunriseTimeSpan.HasValue
+            ? (int)SunriseTimeSpan.Value.TotalMinutes
+            : LightTime;
+
+        private int DisplayDarkMinutes => ScheduleMode == "SunsetToSunrise" && SunsetTimeSpan.HasValue
+            ? (int)SunsetTimeSpan.Value.TotalMinutes
+            : DarkTime;
+
+        private static TimeSpan ToSolarDisplayTime(int minutes, int offset)
+        {
+            const int MinutesPerDay = 24 * 60;
+            long adjustedMinutes = (long)minutes + offset;
+
+            // Retained offsets can cross midnight as sun times change. Match the
+            // service's daily boundaries without changing offsets or sun markers.
+            return TimeSpan.FromMinutes(((adjustedMinutes % MinutesPerDay) + MinutesPerDay) % MinutesPerDay);
+        }
+
+        public TimeSpan LightTimeTimeSpan
+        {
+            get
+            {
+                if (ScheduleMode == "SunsetToSunrise")
+                {
+                    return ToSolarDisplayTime(DisplayLightMinutes, SunriseOffset);
+                }
+                else
+                {
+                    return TimeSpan.FromMinutes(LightTime);
+                }
+            }
+        }
+
+        public TimeSpan DarkTimeTimeSpan
+        {
+            get
+            {
+                if (ScheduleMode == "SunsetToSunrise")
+                {
+                    return ToSolarDisplayTime(DisplayDarkMinutes, SunsetOffset);
+                }
+                else
+                {
+                    return TimeSpan.FromMinutes(DarkTime);
+                }
+            }
+        }
+
+        // === Values to pass to timeline ===
+        public TimeSpan? SunriseTimeSpan
+        {
+            get => _sunriseTimeSpan;
+            set
+            {
+                if (_sunriseTimeSpan != value)
+                {
+                    _sunriseTimeSpan = value;
+                    NotifyPropertyChanged();
+                    OnPropertyChanged(nameof(LightTimeTimeSpan));
+                    OnPropertyChanged(nameof(SunriseOffsetMin));
+                    OnPropertyChanged(nameof(SunriseOffsetMax));
+                    OnPropertyChanged(nameof(SunsetOffsetMin));
+                }
+            }
+        }
+
+        public TimeSpan? SunsetTimeSpan
+        {
+            get => _sunsetTimeSpan;
+            set
+            {
+                if (_sunsetTimeSpan != value)
+                {
+                    _sunsetTimeSpan = value;
+                    NotifyPropertyChanged();
+                    OnPropertyChanged(nameof(DarkTimeTimeSpan));
+                    OnPropertyChanged(nameof(SunriseOffsetMax));
+                    OnPropertyChanged(nameof(SunsetOffsetMin));
+                    OnPropertyChanged(nameof(SunsetOffsetMax));
+                }
+            }
+        }
+
+        // === Picker values (TwoWay binding targets for TimePickers) ===
+        private static TimeSpan ToPickerTime(int minutes) =>
+            minutes is >= 0 and < 1440 ? TimeSpan.FromMinutes(minutes) : TimeSpan.FromTicks(-1);
+
+        public TimeSpan LightTimePickerValue
+        {
+            // TimePicker only accepts -1 tick for an unset value. Keep missing sun
+            // times in settings without passing other negative durations to XAML.
+            get => ToPickerTime(LightTime);
+            set
+            {
+                if (value.Ticks >= 0 && value.Ticks < TimeSpan.TicksPerDay)
+                {
+                    LightTime = (int)value.TotalMinutes;
+                }
+            }
+        }
+
+        public TimeSpan DarkTimePickerValue
+        {
+            get => ToPickerTime(DarkTime);
+            set
+            {
+                if (value.Ticks >= 0 && value.Ticks < TimeSpan.TicksPerDay)
+                {
+                    DarkTime = (int)value.TotalMinutes;
+                }
+            }
+        }
+
+        public string Latitude => ModuleSettings.Properties.Latitude.Value;
+
+        public string Longitude => ModuleSettings.Properties.Longitude.Value;
+
+        private SearchLocation? _selectedSearchLocation;
+
+        public SearchLocation? SelectedCity
+        {
+            get => _selectedSearchLocation;
+            set
+            {
+                if (!_refreshingModuleSettings && _selectedSearchLocation != value)
+                {
+                    _selectedSearchLocation = value;
+
+                    if (_selectedSearchLocation != null)
+                    {
+                        UpdateSunTimes(_selectedSearchLocation.Latitude, _selectedSearchLocation.Longitude, _selectedSearchLocation.City);
+                    }
+                    else
+                    {
+                        NotifyPropertyChanged();
+                    }
+                }
+            }
+        }
+
+        private string _syncButtonInformation = "Please sync your location";
+
+        public string SyncButtonInformation => _syncButtonInformation;
+
+        private double _locationPanelLatitude;
+        private double _locationPanelLongitude;
+
+        public double LocationPanelLatitude
+        {
+            get => _locationPanelLatitude;
+            set
+            {
+                if (_locationPanelLatitude != value)
+                {
+                    _locationPanelLatitude = value;
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged(nameof(LocationPanelLightTime));
+                }
+            }
+        }
+
+        public double LocationPanelLongitude
+        {
+            get => _locationPanelLongitude;
+            set
+            {
+                if (_locationPanelLongitude != value)
+                {
+                    _locationPanelLongitude = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        private int _locationPanelLightTime;
+        private int _locationPanelDarkTime;
+
+        public int LocationPanelLightTimeMinutes
+        {
+            get => _locationPanelLightTime;
+            set
+            {
+                if (_locationPanelLightTime != value)
+                {
+                    _locationPanelLightTime = value;
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged(nameof(LocationPanelLightTime));
+                }
+            }
+        }
+
+        public int LocationPanelDarkTimeMinutes
+        {
+            get => _locationPanelDarkTime;
+            set
+            {
+                if (_locationPanelDarkTime != value)
+                {
+                    _locationPanelDarkTime = value;
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged(nameof(LocationPanelDarkTime));
+                }
+            }
+        }
+
+        public TimeSpan LocationPanelLightTime => TimeSpan.FromMinutes(_locationPanelLightTime);
+
+        public TimeSpan LocationPanelDarkTime => TimeSpan.FromMinutes(_locationPanelDarkTime);
+
+        public HotkeySettings ToggleThemeActivationShortcut
+        {
+            get => ModuleSettings.Properties.ToggleThemeHotkey.Value;
+
+            set
+            {
+                if (!_refreshingModuleSettings && value != ModuleSettings.Properties.ToggleThemeHotkey.Value)
+                {
+                    if (value == null)
+                    {
+                        ModuleSettings.Properties.ToggleThemeHotkey.Value = LightSwitchProperties.DefaultToggleThemeHotkey;
+                    }
+                    else
+                    {
+                        ModuleSettings.Properties.ToggleThemeHotkey.Value = value;
+                    }
+
+                    NotifyPropertyChanged();
+
+                    SendConfigMSG(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{{ \"powertoys\": {{ \"{0}\": {1} }} }}",
+                            LightSwitchSettings.ModuleName,
+                            JsonSerializer.Serialize(_moduleSettings, SourceGenerationContextContext.Default.LightSwitchSettings)));
+                }
+            }
+        }
+
+        public void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            Logger.LogInfo($"Changed the property {propertyName}");
+            OnPropertyChanged(propertyName);
+        }
+
+        // PowerDisplay Integration Properties and Methods
+        public ObservableCollection<PowerDisplayProfile> AvailableProfiles { get; } = new ObservableCollection<PowerDisplayProfile>();
+
+        public bool IsPowerDisplayEnabled
+        {
+            get => _isPowerDisplayEnabled;
+            set
+            {
+                if (_isPowerDisplayEnabled != value)
+                {
+                    _isPowerDisplayEnabled = value;
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged(nameof(ShowPowerDisplayDisabledWarning));
+                    NotifyPropertyChanged(nameof(CanSelectPowerDisplayProfile));
+                }
+            }
+        }
+
+        public bool ShowPowerDisplayDisabledWarning => !IsPowerDisplayEnabled;
+
+        public bool IsProfilesLoading
+        {
+            get => _isProfilesLoading;
+            private set
+            {
+                if (_isProfilesLoading == value)
+                {
+                    return;
+                }
+
+                _isProfilesLoading = value;
+                NotifyPropertyChanged(nameof(IsProfilesLoading));
+                NotifyPropertyChanged(nameof(CanSelectPowerDisplayProfile));
+            }
+        }
+
+        public bool CanSelectPowerDisplayProfile => IsPowerDisplayEnabled && !IsProfilesLoading;
+
+        public bool EnableDarkModeProfile
+        {
+            get => ModuleSettings.Properties.EnableDarkModeProfile.Value;
+            set
+            {
+                if (!_refreshingModuleSettings && ModuleSettings.Properties.EnableDarkModeProfile.Value != value)
+                {
+                    ModuleSettings.Properties.EnableDarkModeProfile.Value = value;
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged(nameof(ShowPowerDisplayDisabledWarning));
+                    SaveSettings();
+                }
+            }
+        }
+
+        public bool EnableLightModeProfile
+        {
+            get => ModuleSettings.Properties.EnableLightModeProfile.Value;
+            set
+            {
+                if (!_refreshingModuleSettings && ModuleSettings.Properties.EnableLightModeProfile.Value != value)
+                {
+                    ModuleSettings.Properties.EnableLightModeProfile.Value = value;
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged(nameof(ShowPowerDisplayDisabledWarning));
+                    SaveSettings();
+                }
+            }
+        }
+
+        public PowerDisplayProfile? SelectedDarkModeProfile
+        {
+            get => _selectedDarkModeProfile;
+            set => SetSelectedProfile(ref _selectedDarkModeProfile, value, isDarkMode: true, nameof(SelectedDarkModeProfile));
+        }
+
+        public PowerDisplayProfile? SelectedLightModeProfile
+        {
+            get => _selectedLightModeProfile;
+            set => SetSelectedProfile(ref _selectedLightModeProfile, value, isDarkMode: false, nameof(SelectedLightModeProfile));
+        }
+
+        /// <summary>
+        /// Backing setter for the two theme profile selections: stores the object, persists the
+        /// canonical id while clearing any legacy name (saving only on change), and raises the
+        /// change notification for <paramref name="propertyName"/>.
+        /// </summary>
+        private void SetSelectedProfile(ref PowerDisplayProfile? field, PowerDisplayProfile? value, bool isDarkMode, string propertyName)
+        {
+            if (_refreshingModuleSettings || field == value)
+            {
+                return;
+            }
+
+            field = value;
+
+            if (_suppressProfileSelectionPersistence)
+            {
+                NotifyPropertyChanged(propertyName);
+                return;
+            }
+
+            var newId = value?.Id ?? 0;
+            var idProperty = isDarkMode
+                ? ModuleSettings.Properties.DarkModeProfileId
+                : ModuleSettings.Properties.LightModeProfileId;
+            var legacyNameProperty = isDarkMode
+                ? ModuleSettings.Properties.DarkModeProfile
+                : ModuleSettings.Properties.LightModeProfile;
+
+            if (LightSwitchProfileReferenceHelper.SetProfileId(
+                idProperty,
+                legacyNameProperty,
+                newId))
+            {
+                SaveSettings();
+            }
+
+            NotifyPropertyChanged(propertyName);
+        }
+
+        public async Task InitializeProfilesAsync(CancellationToken cancellationToken = default)
+        {
+            if (IsProfilesLoading)
+            {
+                return;
+            }
+
+            IsProfilesLoading = true;
+            _suppressProfileSelectionPersistence = true;
+            try
+            {
+                var profilesData = await ProfileHelper.LoadProfilesAsync(cancellationToken);
+
+                AvailableProfiles.Clear();
+                foreach (var profile in profilesData.GetAssignedProfiles())
+                {
+                    AvailableProfiles.Add(profile);
+                }
+
+                SelectByStoredReference(isDarkMode: true);
+                SelectByStoredReference(isDarkMode: false);
+            }
+            catch (Exception ex)
+            {
+                AvailableProfiles.Clear();
+                SetSelectedProfilesWithoutPersisting(null, null);
+                Logger.LogError($"Failed to load PowerDisplay profiles: {ex.Message}");
+            }
+            finally
+            {
+                _suppressProfileSelectionPersistence = false;
+                IsProfilesLoading = false;
+            }
+        }
+
+        private void SetSelectedProfilesWithoutPersisting(
+            PowerDisplayProfile? darkProfile,
+            PowerDisplayProfile? lightProfile)
+        {
+            _selectedDarkModeProfile = darkProfile;
+            _selectedLightModeProfile = lightProfile;
+            NotifyPropertyChanged(nameof(SelectedDarkModeProfile));
+            NotifyPropertyChanged(nameof(SelectedLightModeProfile));
+        }
+
+        /// <summary>
+        /// Selects the profile object for the given theme from settings by stored profile id. Zero
+        /// or a missing id produces no selection.
+        /// </summary>
+        private void SelectByStoredReference(bool isDarkMode)
+        {
+            var storedId = isDarkMode
+                ? ModuleSettings.Properties.DarkModeProfileId.Value
+                : ModuleSettings.Properties.LightModeProfileId.Value;
+            var match = storedId >= 1
+                ? AvailableProfiles.FirstOrDefault(profile => profile.Id == storedId)
+                : null;
+
+            if (isDarkMode)
+            {
+                if (_selectedDarkModeProfile != match)
+                {
+                    _selectedDarkModeProfile = match;
+                    NotifyPropertyChanged(nameof(SelectedDarkModeProfile));
+                }
+            }
+            else
+            {
+                if (_selectedLightModeProfile != match)
+                {
+                    _selectedLightModeProfile = match;
+                    NotifyPropertyChanged(nameof(SelectedLightModeProfile));
+                }
+            }
+        }
+
+        public void RefreshEnabledState()
+        {
+            OnPropertyChanged(nameof(IsEnabled));
+        }
+
+        public void RefreshModuleSettings()
+        {
+            RefreshModuleSettings(calculateSunTimes: false);
+        }
+
+        private void RefreshModuleSettings(bool calculateSunTimes, string? locationName = null)
+        {
+            var wasRefreshing = _refreshingModuleSettings;
+            _refreshingModuleSettings = true;
+            try
+            {
+                // Reloaded values are authoritative. Updating TwoWay controls (in
+                // particular NumberBox bounds) must not write their old values back.
+                RefreshScheduleDisplay(calculateSunTimes);
+                if (locationName != null)
+                {
+                    _syncButtonInformation = locationName;
+                }
+
+                OnPropertyChanged(nameof(ModuleSettings));
+                OnPropertyChanged(nameof(ChangeSystem));
+                OnPropertyChanged(nameof(ChangeApps));
+                OnPropertyChanged(nameof(LightTime));
+                OnPropertyChanged(nameof(DarkTime));
+                OnPropertyChanged(nameof(LightTimePickerValue));
+                OnPropertyChanged(nameof(DarkTimePickerValue));
+                OnPropertyChanged(nameof(LightTimeTimeSpan));
+                OnPropertyChanged(nameof(DarkTimeTimeSpan));
+                OnPropertyChanged(nameof(SunriseTimeSpan));
+                OnPropertyChanged(nameof(SunsetTimeSpan));
+                OnPropertyChanged(nameof(SunriseOffsetMin));
+                OnPropertyChanged(nameof(SunriseOffsetMax));
+                OnPropertyChanged(nameof(SunsetOffsetMin));
+                OnPropertyChanged(nameof(SunsetOffsetMax));
+                OnPropertyChanged(nameof(SunriseOffset));
+                OnPropertyChanged(nameof(SunsetOffset));
+                OnPropertyChanged(nameof(Latitude));
+                OnPropertyChanged(nameof(Longitude));
+                OnPropertyChanged(nameof(SelectedCity));
+                OnPropertyChanged(nameof(SyncButtonInformation));
+                OnPropertyChanged(nameof(ScheduleMode));
+                OnPropertyChanged(nameof(ToggleThemeActivationShortcut));
+                OnPropertyChanged(nameof(EnableDarkModeProfile));
+                OnPropertyChanged(nameof(EnableLightModeProfile));
+                SelectByStoredReference(isDarkMode: true);
+                SelectByStoredReference(isDarkMode: false);
+                RefreshEnabledState();
+            }
+            finally
+            {
+                _refreshingModuleSettings = wasRefreshing;
+            }
+        }
+
+        private void RefreshScheduleDisplay(bool calculateSunTimes)
+        {
+            bool sunSchedule = ScheduleMode == "SunsetToSunrise";
+            _sunriseTimeSpan = sunSchedule ? TimeSpan.FromMinutes(LightTime) : null;
+            _sunsetTimeSpan = sunSchedule ? TimeSpan.FromMinutes(DarkTime) : null;
+
+            _selectedSearchLocation = null;
+            if (double.TryParse(Latitude, NumberStyles.Float, CultureInfo.InvariantCulture, out double savedLat) &&
+                double.TryParse(Longitude, NumberStyles.Float, CultureInfo.InvariantCulture, out double savedLng))
+            {
+                _selectedSearchLocation = SearchLocations.FirstOrDefault(c =>
+                    Math.Abs(c.Latitude - savedLat) < 0.0001 &&
+                    Math.Abs(c.Longitude - savedLng) < 0.0001);
+
+                if (sunSchedule && calculateSunTimes)
+                {
+                    // Keep the initial preview current even when the module is off.
+                    // These display values must not replace the saved schedule times.
+                    var today = DateTime.Now;
+                    var sunTimes = SunCalc.CalculateSunriseSunset(savedLat, savedLng, today.Year, today.Month, today.Day);
+                    _sunriseTimeSpan = TimeSpan.FromMinutes((sunTimes.SunriseHour * 60) + sunTimes.SunriseMinute);
+                    _sunsetTimeSpan = TimeSpan.FromMinutes((sunTimes.SunsetHour * 60) + sunTimes.SunsetMinute);
+                }
+            }
+
+            _syncButtonInformation = _selectedSearchLocation?.City ?? $"{Latitude}°,{Longitude}°";
+        }
+
+        public void UpdateSunTimes(double latitude, double longitude, string city = "n/a")
+        {
+            var today = DateTime.Now;
+            SunTimes result = SunCalc.CalculateSunriseSunset(
+                latitude,
+                longitude,
+                today.Year,
+                today.Month,
+                today.Day);
+
+            ApplyLocation(latitude, longitude, (result.SunriseHour * 60) + result.SunriseMinute, (result.SunsetHour * 60) + result.SunsetMinute, city);
+        }
+
+        internal void ApplyLocation(double latitude, double longitude, int lightMinutes, int darkMinutes, string city = "n/a")
+        {
+            if (_refreshingModuleSettings)
+            {
+                return;
+            }
+
+            var properties = ModuleSettings.Properties;
+            string latitudeText = latitude.ToString(CultureInfo.InvariantCulture);
+            string longitudeText = longitude.ToString(CultureInfo.InvariantCulture);
+            int sunriseOffset = properties.SunriseOffset.Value;
+            int sunsetOffset = properties.SunsetOffset.Value;
+
+            if (lightMinutes is >= 0 and < 1440 && darkMinutes is >= 0 and < 1440)
+            {
+                // Clamp against the complete new schedule, in the same order as the
+                // offset controls. Recheck sunset after a sunrise adjustment. Missing
+                // polar sun times retain the existing offsets rather than invent bounds.
+                sunsetOffset = ClampSunsetOffset(sunsetOffset, sunriseOffset);
+                sunriseOffset = (int)Math.Clamp((long)sunriseOffset, -lightMinutes, Math.Max(0L, (long)darkMinutes + sunsetOffset - lightMinutes - 1));
+                sunsetOffset = ClampSunsetOffset(sunsetOffset, sunriseOffset);
+            }
+
+            bool changed = properties.Latitude.Value != latitudeText || properties.Longitude.Value != longitudeText ||
+                properties.LightTime.Value != lightMinutes || properties.DarkTime.Value != darkMinutes ||
+                properties.SunriseOffset.Value != sunriseOffset || properties.SunsetOffset.Value != sunsetOffset;
+
+            // Publish all source values before any binding or persistence callback
+            // can observe the new location. A partial pair can clamp a valid offset.
+            properties.Latitude.Value = latitudeText;
+            properties.Longitude.Value = longitudeText;
+            properties.LightTime.Value = lightMinutes;
+            properties.DarkTime.Value = darkMinutes;
+            properties.SunriseOffset.Value = sunriseOffset;
+            properties.SunsetOffset.Value = sunsetOffset;
+            RefreshModuleSettings(calculateSunTimes: false, locationName: city == "n/a" ? null : city);
+
+            if (changed)
+            {
+                SaveSettings();
+            }
+
+            int ClampSunsetOffset(int value, int lightOffset) =>
+                (int)Math.Clamp((long)value, Math.Min(0L, (long)lightMinutes + lightOffset - darkMinutes + 1), 1439 - darkMinutes);
+        }
+
+        public void InitializeScheduleMode()
+        {
+            RefreshModuleSettings(calculateSunTimes: true);
+        }
+
+        private bool _enabledStateIsGPOConfigured;
+        private GpoRuleConfigured _enabledGpoRuleConfiguration;
+        private LightSwitchSettings _moduleSettings;
+        private bool _refreshingModuleSettings;
+        private bool _isEnabled;
+        private TimeSpan? _sunriseTimeSpan;
+        private TimeSpan? _sunsetTimeSpan;
+
+        // PowerDisplay integration
+        private bool _isPowerDisplayEnabled;
+        private PowerDisplayProfile? _selectedDarkModeProfile;
+        private PowerDisplayProfile? _selectedLightModeProfile;
+        private bool _suppressProfileSelectionPersistence;
+    }
+}

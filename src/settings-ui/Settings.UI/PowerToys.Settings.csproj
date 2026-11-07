@@ -1,0 +1,277 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<!-- Look at Directory.Build.props in root for common stuff as well -->
+	<Import Project="$(RepoRoot)src\Common.Dotnet.CsWinRT.props" />
+	<Import Project="$(RepoRoot)src\Common.SelfContained.props" />
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<RootNamespace>Microsoft.PowerToys.Settings.UI</RootNamespace>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<UseWinUI>true</UseWinUI>
+		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+		<WindowsPackageType>None</WindowsPackageType>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<ApplicationIcon>Assets\Settings\icon.ico</ApplicationIcon>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+		<!-- OutputPath looks like this because it has to be called both by settings and publish.cmd -->
+		<OutputPath>$(RepoRoot)$(Platform)\$(Configuration)\WinUI3Apps</OutputPath>
+		<!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
+		<ProjectPriFileName>PowerToys.Settings.pri</ProjectPriFileName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Assets\Settings\Icons\Models\Azure.svg" />
+		<None Remove="Assets\Settings\Icons\Models\FoundryLocal.svg" />
+		<None Remove="Assets\Settings\Icons\Models\Onnx.svg" />
+		<None Remove="Assets\Settings\Icons\Models\OpenAI.dark.svg" />
+		<None Remove="Assets\Settings\Icons\Models\OpenAI.light.svg" />
+		<None Remove="Assets\Settings\Icons\Models\WindowsML.svg" />
+		<None Remove="Assets\Settings\Modules\APDialog.dark.png" />
+		<None Remove="Assets\Settings\Modules\APDialog.light.png" />
+		<None Remove="Assets\Settings\Modules\LightSwitch.png" />
+		<None Remove="SettingsXAML\Controls\Dashboard\CheckUpdateControl.xaml" />
+		<None Remove="SettingsXAML\Controls\Dashboard\ShortcutConflictControl.xaml" />
+		<None Remove="SettingsXAML\Controls\TitleBar\TitleBar.xaml" />
+	</ItemGroup>
+	<ItemGroup>
+		<Page Remove="SettingsXAML\App.xaml" />
+	</ItemGroup>
+	<ItemGroup>
+		<ApplicationDefinition Include="SettingsXAML\App.xaml" />
+	</ItemGroup>
+
+
+	<!-- See https://learn.microsoft.com/windows/apps/develop/platform/csharp-winrt/net-projection-from-cppwinrt-component for more info -->
+	<PropertyGroup>
+		<CsWinRTIncludes>PowerToys.GPOWrapper;PowerToys.ZoomItSettingsInterop</CsWinRTIncludes>
+		<CsWinRTGeneratedFilesDir>$(OutDir)</CsWinRTGeneratedFilesDir>
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="Assets\Settings\SplashScreen.scale-200.png" />
+		<Content Include="Assets\Settings\LockScreenLogo.scale-200.png" />
+		<Content Include="Assets\Settings\Square150x150Logo.scale-200.png" />
+		<Content Include="Assets\Settings\Square44x44Logo.scale-200.png" />
+		<Content Include="Assets\Settings\Square44x44Logo.targetsize-24_altform-unplated.png" />
+		<Content Include="Assets\Settings\StoreLogo.png" />
+		<Content Include="Assets\Settings\Wide310x150Logo.scale-200.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- AI Model Provider Icons - SVG files -->
+		<Content Include="Assets\Settings\Icons\Models\*.svg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- OOBE Welcome hero: high-res module icons, linked from doc\images\icons (single source of truth) -->
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\PowerToys icon\PNG\PowerToysAppList.targetsize-256.png" LinkName="PowerToys.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\AdvancedPaste.png" LinkName="AdvancedPaste.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Always On Top.png" LinkName="AlwaysOnTop.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Awake.png" LinkName="Awake.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Color Picker.png" LinkName="ColorPicker.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Command Not Found.png" LinkName="CommandNotFound.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Command Palette.png" LinkName="CommandPalette.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Crop And Lock.png" LinkName="CropAndLock.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\CursorWrap.png" LinkName="CursorWrap.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Environment Manager.png" LinkName="EnvironmentVariables.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\FancyZones.png" LinkName="FancyZones.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\File Explorer Preview.png" LinkName="FileExplorerPreview.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\File Locksmith.png" LinkName="FileLocksmith.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Find My Mouse.png" LinkName="FindMyMouse.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\GrabAndMove.png" LinkName="GrabAndMove.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Host File Editor.png" LinkName="Hosts.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Image Resizer.png" LinkName="ImageResizer.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Keyboard Manager.png" LinkName="KeyboardManager.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Light Switch.png" LinkName="LightSwitch.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\MeasureTool.png" LinkName="MeasureTool.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Mouse Crosshairs.png" LinkName="MouseCrosshairs.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Mouse Highlighter.png" LinkName="MouseHighlighter.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\MouseJump.png" LinkName="MouseJump.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\MouseWithoutBorders.png" LinkName="MouseWithoutBorders.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\NewPlus.png" LinkName="NewPlus.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Peek.png" LinkName="Peek.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\PowerAccent.png" LinkName="QuickAccent.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\PowerDisplay.png" LinkName="PowerDisplay.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\PowerOCR.png" LinkName="TextExtractor.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\PowerRename.png" LinkName="PowerRename.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\PowerToys Run.png" LinkName="PowerToysRun.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Registry Preview.png" LinkName="RegistryPreview.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Shortcut Guide.png" LinkName="ShortcutGuide.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\WindowHopper.png" LinkName="WindowHopper.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\Workspaces.png" LinkName="Workspaces.png" />
+		<WelcomeHeroIcon Include="$(RepoRoot)doc\images\icons\ZoomIt.png" LinkName="ZoomIt.png" />
+		<Content Include="@(WelcomeHeroIcon)">
+			<Link>Assets\Settings\Modules\OOBE\Welcome\%(LinkName)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Images\MouseJump-Desktop.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Labs.WinUI.Controls.OpacityMaskView" />
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" />
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" />
+		<PackageReference Include="CommunityToolkit.WinUI.Animations" />
+		<PackageReference Include="CommunityToolkit.WinUI.Extensions" />
+		<PackageReference Include="CommunityToolkit.WinUI.Converters" />
+		<PackageReference Include="CommunityToolkit.Labs.WinUI.Controls.MarkdownTextBlock" />
+		<PackageReference Include="WinUIEx" />
+		<!-- Including MessagePack to force version, since it's used by StreamJsonRpc but contains vulnerabilities. After StreamJsonRpc updates the version of MessagePack, we can upgrade StreamJsonRpc instead. -->
+		<PackageReference Include="MessagePack" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" />
+		<PackageReference Include="StreamJsonRpc" />
+		<!-- HACK: Microsoft.Extensions.Hosting is referenced, even if it is not used, to force dll versions to be the same as in other projects. Really only needed since the Experimentation APIs that are added in CI reference some net standard 2.0 assemblies. -->
+		<PackageReference Include="Microsoft.Extensions.Hosting" />
+		<!-- HACK: To make sure the version pulled in by Microsoft.Extensions.Hosting is current. -->
+		
+		<!-- This line forces the WebView2 version used by Windows App SDK to be the one we expect from Directory.Packages.props . -->
+		<PackageReference Include="Microsoft.Web.WebView2" />
+		<!-- HACK: CmdPal uses CommunityToolkit.Common directly. Align the version. -->
+		<PackageReference Include="CommunityToolkit.Common" />
+		<!-- HACK: MWB and Advanced Paste. Align the version.  got flagged when https://github.com/microsoft/PowerToys/pull/38779 was done -->
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
+		<Manifest Include="$(ApplicationManifest)" />
+	</ItemGroup>
+	<!-- Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+		   Tools extension to be activated for this project even if the Windows App SDK Nuget
+		   package has not yet been restored -->
+
+	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnablePreviewMsixTooling)'=='true'">
+		<ProjectCapability Include="Msix" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="Settings.UI.UnitTests" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- HACK: Common.UI is referenced, even if it is not used, to force dll versions to be the same as in other projects that use it. It's still unclear why this is the case, but this is need for flattening the install directory. -->
+		<ProjectReference Include="..\..\common\Common.Search\Common.Search.csproj" />
+		<ProjectReference Include="..\..\common\Common.UI\Common.UI.csproj" />
+		<ProjectReference Include="..\..\common\Common.UI.Controls\Common.UI.Controls.csproj" />
+		<ProjectReference Include="..\..\common\GPOWrapper\GPOWrapper.vcxproj" />
+		<ProjectReference Include="..\..\common\interop\PowerToys.Interop.vcxproj" />
+		<ProjectReference Include="..\..\modules\MouseUtils\MouseJump.Common\MouseJump.Common.csproj" />
+		<ProjectReference Include="..\..\modules\MouseUtils\MouseJump.Models\MouseJump.Models.csproj" />
+		<ProjectReference Include="..\..\modules\poweraccent\PowerAccent.Common\PowerAccent.Common.csproj" />
+		<ProjectReference Include="..\..\modules\ZoomIt\ZoomItSettingsInterop\ZoomItSettingsInterop.vcxproj" />
+		<ProjectReference Include="..\..\common\ManagedCommon\ManagedCommon.csproj" />
+		<ProjectReference Include="..\..\common\ManagedTelemetry\Telemetry\ManagedTelemetry.csproj" />
+		<ProjectReference Include="..\..\common\LanguageModelProvider\LanguageModelProvider.csproj" />
+		<ProjectReference Include="..\..\modules\powerdisplay\PowerDisplay.Models\PowerDisplay.Models.csproj" />
+		<ProjectReference Include="..\Settings.UI.Library\Settings.UI.Library.csproj" />
+		<ProjectReference Include="..\Settings.UI.Controls\Settings.UI.Controls.csproj" />
+		<Compile Include="..\..\modules\MouseWithoutBorders\App\Class\IPairingKeyCodec.cs" Link="MouseWithoutBorders\IPairingKeyCodec.cs" />
+		<Compile Include="..\..\modules\MouseWithoutBorders\App\Class\PairingKeyCodec.cs" Link="MouseWithoutBorders\PairingKeyCodec.cs" />
+	</ItemGroup>
+
+	<!-- XamlIndexBuilder now outputs directly to Assets\Settings -->
+	<PropertyGroup>
+		<GeneratedJsonFile>$(MSBuildProjectDirectory)\Assets\Settings\search.index.json</GeneratedJsonFile>
+		<!-- Generate Settings search index in Release and Custom builds. Debug builds skip index generation for faster builds. 
+		     To enable index generation in Debug, uncomment the line below: -->
+		<!-- <GenerateSettingsSearchIndex>true</GenerateSettingsSearchIndex> -->
+		<GenerateSettingsSearchIndex Condition="'$(GenerateSettingsSearchIndex)' == '' and '$(Configuration)' != 'Debug'">true</GenerateSettingsSearchIndex>
+		<GenerateSettingsSearchIndex Condition="'$(GenerateSettingsSearchIndex)' == ''">false</GenerateSettingsSearchIndex>
+	</PropertyGroup>
+
+	<!-- No RID/Platform plumbing needed here. XamlIndexBuilder handles generation after its own Build. -->
+
+	<PropertyGroup>
+		<!-- TODO: fix issues and reenable -->
+		<!-- These are caused by streamjsonrpc dependency on Microsoft.VisualStudio.Threading.Analyzers -->
+		<!-- We might want to add that to the project and fix the issues as well -->
+		<NoWarn>VSTHRD002;VSTHRD110;VSTHRD100;VSTHRD200;VSTHRD101</NoWarn>
+	</PropertyGroup>
+
+	<!-- Include the search index only if generation is enabled and the file exists (prevents accidentally embedding stale indices) -->
+
+	<ItemGroup>
+		<!-- Ensure the generated search index is present in the project; only if it exists to prevent CS1566 in clean CI -->
+		<Content Include="$(GeneratedJsonFile)" Condition="'$(GenerateSettingsSearchIndex)' == 'true' and Exists('$(GeneratedJsonFile)')">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<!-- Embed the generated search index; logical name must match PrebuiltIndexResourceName -->
+		<EmbeddedResource Include="$(GeneratedJsonFile)" Condition="'$(GenerateSettingsSearchIndex)' == 'true' and Exists('$(GeneratedJsonFile)')">
+			<LogicalName>Microsoft.PowerToys.Settings.UI.Assets.search.index.json</LogicalName>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Assets\Settings\icon.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\Settings\Icons\QuickAccent.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Assets\Settings\Scripts\CheckCmdNotFoundRequirements.ps1">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\Settings\Scripts\InstallWinGetClientModule.ps1">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\Settings\Scripts\InstallPowerShell7.ps1">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\Settings\Scripts\EnableModule.ps1">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\Settings\Scripts\DisableModule.ps1">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<Page Update="SettingsXAML\Views\PowerAccentReferenceGuideWindow.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="SettingsXAML\Controls\TitleBar\TitleBar.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="SettingsXAML\Controls\CopyButton\CopyButton.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="SettingsXAML\Controls\GPOInfoControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="SettingsXAML\Controls\Dashboard\ShortcutConflictControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="SettingsXAML\Controls\Dashboard\CheckUpdateControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		    <Page Update="SettingsXAML\Controls\Timeline\TimelineStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="SettingsXAML\Controls\Timeline\Timeline.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Page Update="SettingsXAML\OOBE\Views\OobeWorkspaces.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+		<Page Update="SettingsXAML\Panels\MouseJumpPanel.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+		<Page Update="SettingsXAML\Views\WorkspacesPage.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+	</ItemGroup>
+
+	<Target Name="BuildXamlIndexBeforeSettings" BeforeTargets="CoreCompile" Condition="'$(DesignTimeBuild)' != 'true' and '$(GenerateSettingsSearchIndex)' == 'true'">
+		<Message Importance="high" Text="[Settings] Building XamlIndexBuilder prior to compile. Views='$(MSBuildProjectDirectory)\SettingsXAML\Views' Out='$(GeneratedJsonFile)'" />
+		<MSBuild Projects="..\Settings.UI.XamlIndexBuilder\Settings.UI.XamlIndexBuilder.csproj" Targets="Build" Properties="Configuration=$(Configuration);Platform=Any CPU;TargetFramework=$(CoreTargetFramework);XamlViewsDir=$(MSBuildProjectDirectory)\SettingsXAML\Views;GeneratedJsonFile=$(GeneratedJsonFile);GenerateSettingsSearchIndex=$(GenerateSettingsSearchIndex)" />
+	</Target>
+</Project>

@@ -1,0 +1,82 @@
+﻿<UserControl
+    x:Class="Microsoft.PowerToys.Settings.UI.Controls.OOBEPageControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource PageStyle}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Image
+            x:Name="HeaderImage"
+            Height="{x:Bind HeroImageHeight}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Source="{x:Bind HeroImage}"
+            Stretch="UniformToFill" />
+
+        <Canvas
+            x:Name="HeaderVideoHost"
+            Height="{x:Bind HeroImageHeight}"
+            HorizontalAlignment="Stretch"
+            SizeChanged="HeaderVideoHost_SizeChanged"
+            Visibility="Collapsed">
+            <MediaPlayerElement
+                x:Name="HeaderVideo"
+                AreTransportControlsEnabled="False"
+                AutomationProperties.AccessibilityView="Raw"
+                IsTabStop="False"
+                Stretch="UniformToFill" />
+        </Canvas>
+
+        <Grid
+            x:Name="HeaderFallback"
+            Height="{x:Bind HeroImageHeight}"
+            Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}"
+            Visibility="Collapsed">
+            <Image
+                Width="64"
+                Height="64"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                AutomationProperties.AccessibilityView="Raw"
+                Source="ms-appx:///Assets/Settings/Icons/PowerToys.png"
+                Stretch="Uniform" />
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel
+                Margin="32,24"
+                VerticalAlignment="Top"
+                Orientation="Vertical"
+                Spacing="12">
+
+                <TextBlock
+                    x:Name="TitleTxt"
+                    AutomationProperties.HeadingLevel="Level1"
+                    Style="{StaticResource TitleTextBlockStyle}"
+                    Text="{x:Bind Title}" />
+
+                <TextBlock
+                    x:Name="DescriptionTxt"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="{x:Bind Description}"
+                    TextWrapping="Wrap" />
+
+                <ContentPresenter
+                    x:Name="ModuleContentPresenter"
+                    Margin="0,8"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    Content="{x:Bind PageContent}" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
